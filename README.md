@@ -1,70 +1,32 @@
-# Getting Started with Create React App
+# 프로젝트 계획 이유
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+redux의 이론을 공부한후 redux에 익숙해지기 위해 프로젝트 계획을 하게 되었습니다.
+기존에 react class Component로 만들어봤던 mwflix 프로젝트를 함수형 component와  
+redux로 다시 한번 만들어보기위해, 그리고 좀 더 세련되게 다시 만들어보고 싶어 시작하게
+되었습니다. 추가로 여력이 되면 파이어베이스 사용을 연습해보기 위해서 입니다.
 
-## Available Scripts
+## Page 구성
 
-In the project directory, you can run:
+### 0. Auth page
 
-### `npm start`
+    ###  firebase를 활용해  로그인 화면 구성 -이메일 로그인, 구글 로그인 , 깃헙로그인, 필요하면 카톡 로그인 구성
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 1. Movie page
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+    ####   Popular movie,  Now Playing movie, Upcoming movie, latest movie
 
-### `npm test`
+### 2. Drama page
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    #### Popular Drama, On_the air Drama, Latest tv show Drama
 
-### `npm run build`
+### 3. Search
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    #### Search Page
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 4. Detail page
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    #### 관련 유튜브 영상 ,   출연배우,  내용,  포스터사진
 
-### `npm run eject`
+### 5. my page
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    ####  추가 여력이 되면  파이어베이스를 활용해 내 무비와 드라마들을 저장,공유기능 추가
