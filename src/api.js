@@ -22,6 +22,7 @@ export const moviesApi = {
         query: encodeURIComponent(term),
       },
     }),
+  videos: (id) => api.get(`movie/${id}/videos`),
 };
 
 //drama -Latest, popular, on_the_air
@@ -30,6 +31,7 @@ export const dramaApi = {
   lates: () => api.get("tv/latest"),
   popular: () => api.get("tv/popular"),
   onAir: () => api.get("tv/on_the_air"),
+  airToday: () => api.get("tv/airing_today"),
   detail: (id) => api.get(`tv/${id}`),
   search: (term) =>
     api.get(`search/tv`, {
@@ -37,6 +39,7 @@ export const dramaApi = {
         query: encodeURIComponent(term),
       },
     }),
+  videos: (id) => api.get(`tv/${id}/videos`),
 };
 
 export default api;

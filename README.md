@@ -17,7 +17,7 @@ redux로 다시 한번 만들어보기위해, 그리고 좀 더 세련되게 다
 
 ### 2. Drama page
 
-    #### Popular Drama, On_the air Drama, Latest tv show Drama
+    #### Popular Drama, On_the air Drama, airing today,Latest tv show Drama
 
 ### 3. Search
 

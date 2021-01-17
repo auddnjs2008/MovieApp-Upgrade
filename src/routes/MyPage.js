@@ -8,8 +8,6 @@ import { userActionCreator } from "../store/modules/User";
 const MyPage = ({ logOut }) => {
   const logoutClick = async () => {
     await authService.signOut();
-    logOut();
-    window.location.href = "/";
   };
 
   return (

@@ -5,12 +5,14 @@ import { authService } from "../fbase";
 import { connect } from "react-redux";
 import { userActionCreator } from "../store/modules/User";
 import { errorACtionCreator } from "../store/modules/Error";
+import SocialLogin from "../component/SocialLogin";
+import ErrorMessage from "../component/ErrorMessage";
 
 const Container = styled.div``;
 
 const Form = styled.form``;
 
-const Auth = ({ logIn, errorMessage }) => {
+const Auth = ({ errorMessage, successMessage }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [create, setCreate] = useState(false);
@@ -25,15 +27,14 @@ const Auth = ({ logIn, errorMessage }) => {
           email,
           password
         );
-        logIn(user);
       } else if (create) {
         // 만들어주는 처리 해줘야 한다.
         const user = await authService.createUserWithEmailAndPassword(
           email,
           password
         );
-        logIn(user);
       }
+      successMessage();
       // state update가 필요하다.
     } catch (error) {
       errorMessage(error.message);
@@ -76,14 +77,16 @@ const Auth = ({ logIn, errorMessage }) => {
         <input type="submit" value={!create ? "Log In" : "Create"} />
         <button onClick={toggleBtn}>{!create ? "Create" : "Sign In"}</button>
       </Form>
+      <ErrorMessage></ErrorMessage>
+      <SocialLogin></SocialLogin>
     </Container>
   );
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    logIn: (user) => dispatch(userActionCreator.logIn(user)),
     errorMessage: (text) => dispatch(errorACtionCreator.error(text)),
+    successMessage: () => dispatch(errorACtionCreator.success()),
   };
 };
 export default connect(null, mapDispatchToProps)(Auth);
