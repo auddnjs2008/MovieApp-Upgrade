@@ -15,7 +15,12 @@ export const moviesApi = {
   nowPlaying: () => api.get("movie/now_playing"),
   popular: () => api.get("movie/popular"),
   upComing: () => api.get("movie/upcoming"),
-  detail: (id) => api.get(`movie/${id}`),
+  detail: (id) =>
+    api.get(`movie/${id}`, {
+      params: {
+        append_to_response: "videos",
+      },
+    }),
   search: (term) =>
     api.get(`search/movie`, {
       params: {
@@ -32,7 +37,12 @@ export const dramaApi = {
   popular: () => api.get("tv/popular"),
   onAir: () => api.get("tv/on_the_air"),
   airToday: () => api.get("tv/airing_today"),
-  detail: (id) => api.get(`tv/${id}`),
+  detail: (id) =>
+    api.get(`tv/${id}`, {
+      params: {
+        append_to_response: "videos",
+      },
+    }),
   search: (term) =>
     api.get(`search/tv`, {
       params: {

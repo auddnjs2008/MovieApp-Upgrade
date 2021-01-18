@@ -6,8 +6,18 @@ import { searchActionCreator } from "../store/modules/Search";
 
 const Container = styled.form`
   position: absolute;
-  right: 0;
-  top: 20px;
+  right: 5px;
+  top: 10px;
+  input {
+    outline: none;
+    border: none;
+    padding: 5px;
+    background-color: #2c3e50;
+    color: white;
+    &::placeholder {
+      color: white;
+    }
+  }
 `;
 
 const SearchForm = ({ search, doSearch, notSearch }) => {
