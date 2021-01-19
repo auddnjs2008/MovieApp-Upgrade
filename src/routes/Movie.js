@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { moviesApi } from "../api";
@@ -54,21 +54,49 @@ const HeaderInfo = styled.div`
   }
 `;
 
-const ContentWrapper = styled.div``;
+const ContentWrapper = styled.div`
+  div.hoverBox {
+    background-color: blue;
+    width: 100px;
+    height: 130px;
+    transform: translate(-25%, -25%);
+    @keyframes hoverMove {
+      0% {
+        transform: scale(1, 1);
+      }
+      100% {
+        transform: scale(2, 2);
+      }
+    }
+    animation: hoverMove 0.2s linear forwards;
+  }
+`;
 const SectionWrapper = styled.section`
   position: relative;
+  margin-bottom: 50px;
+
   h1 {
     color: white;
     font-size: 25px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  &:hover {
+    div#left,
+    div#right {
+      opacity: 1;
+    }
   }
 `;
 const MoviesWrapper = styled.div`
+  margin: 0 auto;
   display: flex;
   width: 99vw;
+
   overflow: auto;
+  // overflow-y: hidden;
+  scroll-behavior: smooth;
   &::-webkit-scrollbar {
-    //display: none;
+    display: none;
   }
   img {
     width: 100px;
@@ -81,13 +109,15 @@ const IconWrapper = styled.div`
   &#left,
   &#right {
     top: 35px;
-    height: 130px;
+    height: 150px;
     width: 30px;
     z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: rgba(15, 15, 15, 0.7);
+    color: white;
+    opacity: 0;
   }
   &#right {
     right: 0;
@@ -97,21 +127,14 @@ const MovieWrapper = styled.div`
   position: relative;
   margin-right: 25px;
 `;
-const HoverWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  width: 70px;
-  height: 100px;
-  border: 10px solid red;
-  z-index: 5;
-`;
 
 const SLink = styled(Link)``;
 
 const Movie = () => {
   const [data, setData] = useState({}); // popular, nowPlaying upComing  -> data.results에 존재
   const [width, setWidth] = useState(window.innerWidth);
-
+  let timer = 0;
+  let timerSetting;
   useEffect(() => {
     window.addEventListener("resize", () => setWidth(window.innerWidth));
 
@@ -141,43 +164,58 @@ const Movie = () => {
         .data.results;
       latest = nowPlaying[Random];
     }
-    console.log(latestVideo);
 
     setData({ popular, nowPlaying, upComing, latest, latestVideo });
   }, []);
 
   // 포스터 위에 마우스를 올렸을때  영상이 재생되게 하는 함수 필요(영상데이터를 가져와야 한다.)
-  const bringVideo = async (e) => {};
+  const createBox = (where) => {
+    timer = 1;
+    const containerBox = document.querySelector(".content");
 
-  // scroll 스피더 조절
-  const scrollSpeeder = (where, who) => {
-    //who => node
-    const init = Math.floor(who.scrollLeft);
-    let start = Math.floor(who.scrollLeft);
-    let test = 0;
-    //Math.floor를 사용해보자 =>  who.scrollLeft가 들쭉날쭊 (소수점으로)
-    if (where === "right") {
-      const rightSpeeder = setInterval(() => {
-        test++;
-        console.log(test);
-        start = start + Math.floor(width / 10);
-        console.log(start);
-        console.log(width + init);
-        who.scrollLeft = start; // who.scrollLeft가 일정하지 않음'
+    const hoverBox = document.createElement("div");
+    hoverBox.className = "hoverBox";
 
-        if (start + 15 >= width + init) {
-          who.scrollLeft = width + init;
-          clearInterval(rightSpeeder);
-        }
-      }, 15);
-    } else {
-      const leftSpeeder = setInterval(() => {
-        start = start - Math.ceil(width / 10) - 3;
-        who.scrollLeft = who.scrollLeft - Math.ceil(width / 10) - 3;
-        if (start < init - width) {
-          clearInterval(leftSpeeder);
-        }
-      }, 15);
+    hoverBox.style.position = "absolute";
+
+    hoverBox.style.top = String(where.y + window.scrollY) + "px";
+    hoverBox.style.left = String(where.x) + "px";
+    hoverBox.addEventListener("mouseleave", setOriginal);
+    hoverBox.addEventListener("mouseenter", () => console.log("yayayay"));
+    containerBox.appendChild(hoverBox);
+  };
+
+  const bringVideo = async (e) => {
+    const {
+      currentTarget: { id },
+    } = e;
+    const {
+      currentTarget: {
+        firstChild: { lastChild },
+      },
+    } = e;
+
+    const where = e.currentTarget.getBoundingClientRect();
+
+    timerSetting = setTimeout(() => createBox(where), 1000); // 2초전에 마우스가 나가면 clearTimeout을 해줘야 한다.
+
+    const {
+      data: { results: videos },
+    } = await moviesApi.videos(parseInt(id));
+  };
+
+  // 포스터 위에서 마우스가 벗어났을 때  원래대로 되돌린다.
+
+  const setOriginal = () => {
+    timer = 0;
+    const containerBox = document.querySelector(".content");
+    const hoverBox = document.querySelector(".hoverBox");
+    if (hoverBox) containerBox.removeChild(hoverBox);
+  };
+
+  const setClearTime = () => {
+    if (timer !== 1) {
+      clearTimeout(timerSetting);
     }
   };
 
@@ -187,32 +225,43 @@ const Movie = () => {
       currentTarget: { id, previousSibling },
     } = e;
 
+    let contentWidth =
+      e.id === "left"
+        ? Math.ceil(previousSibling.offsetWidth) + 25 + 8
+        : Math.ceil(previousSibling.previousSibling.offsetWidth) + 25 + 8;
+
     if (id === "left") {
       //scrollWidth // scrollLeft // clientWidth
       if (previousSibling.scrollLeft !== 0) {
-        scrollSpeeder("left", previousSibling);
+        //scrollSpeeder("left", previousSibling);
+        previousSibling.scrollLeft =
+          Math.ceil(previousSibling.scrollLeft) - contentWidth;
+        if (previousSibling.scrollLeft - contentWidth <= 0) {
+          setTimeout(() => {
+            previousSibling.style.scrollBehavior = "auto";
+            previousSibling.scrollLeft = contentWidth * 2;
+            previousSibling.style.scrollBehavior = "smooth";
+          }, 500);
+        }
       }
     } else {
+      const { previousSibling: rightSibling } = previousSibling;
       if (
-        Math.ceil(
-          previousSibling.previousSibling.scrollLeft +
-            previousSibling.previousSibling.offsetWidth
-        ) < previousSibling.previousSibling.scrollWidth
+        Math.ceil(rightSibling.scrollLeft + rightSibling.offsetWidth) <
+        rightSibling.scrollWidth
       ) {
         // 2500
-        scrollSpeeder("right", previousSibling.previousSibling);
+        rightSibling.scrollLeft =
+          Math.ceil(rightSibling.scrollLeft) + contentWidth;
         if (
-          previousSibling.previousSibling.scrollLeft >
-          previousSibling.previousSibling.scrollWidth -
-            previousSibling.previousSibling.scrollLeft
+          rightSibling.scrollLeft >
+          rightSibling.scrollWidth - rightSibling.scrollLeft
         ) {
-          setTimeout(
-            () =>
-              (previousSibling.previousSibling.scrollLeft = Math.ceil(
-                previousSibling.previousSibling.sliderWidth / 4
-              )),
-            50
-          );
+          setTimeout(() => {
+            rightSibling.style.scrollBehavior = "auto";
+            rightSibling.scrollLeft = contentWidth;
+            rightSibling.style.scrollBehavior = "smooth";
+          }, 500);
         }
       }
     }
@@ -252,19 +301,22 @@ const Movie = () => {
         </HeaderInfo>
       </HeaderImage>
 
-      <ContentWrapper>
+      <ContentWrapper className="content">
         <SectionWrapper>
           <h1>Popular Movie</h1>
           <MoviesWrapper>
             {data !== {}
               ? data["popular"].map((item, index) =>
                   index > 9 ? (
-                    <MovieWrapper>
+                    <MovieWrapper
+                      id={item.id}
+                      onMouseEnter={bringVideo}
+                      onMouseLeave={setClearTime}
+                    >
                       <SLink to={`/${item.id}`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
-                        <HoverWrapper></HoverWrapper>
                       </SLink>
                     </MovieWrapper>
                   ) : (
@@ -274,12 +326,15 @@ const Movie = () => {
               : ""}
             {data !== {}
               ? data["popular"].map((item) => (
-                  <MovieWrapper>
+                  <MovieWrapper
+                    id={item.id}
+                    onMouseEnter={bringVideo}
+                    onMouseLeave={setClearTime}
+                  >
                     <SLink to={`/${item.id}`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
-                      <HoverWrapper></HoverWrapper>
                     </SLink>
                   </MovieWrapper>
                 ))
@@ -287,12 +342,15 @@ const Movie = () => {
             {data !== {}
               ? data["popular"].map((item, index) =>
                   index < 10 ? (
-                    <MovieWrapper>
+                    <MovieWrapper
+                      id={item.id}
+                      onMouseEnter={bringVideo}
+                      onMouseLeave={setClearTime}
+                    >
                       <SLink to={`/${item.id}`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
-                        <HoverWrapper></HoverWrapper>
                       </SLink>
                     </MovieWrapper>
                   ) : (
@@ -312,29 +370,129 @@ const Movie = () => {
           <h1>Now Playing</h1>
           <MoviesWrapper>
             {data !== {}
+              ? data["nowPlaying"].map((item, index) =>
+                  index > 9 ? (
+                    <MovieWrapper
+                      id={item.id}
+                      onMouseEnter={bringVideo}
+                      onMouseLeave={setClearTime}
+                    >
+                      <SLink to={`/${item.id}`}>
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                        />
+                      </SLink>
+                    </MovieWrapper>
+                  ) : (
+                    ""
+                  )
+                )
+              : ""}
+            {data !== {}
               ? data["nowPlaying"].map((item) => (
-                  <SLink to={`/${item.id}`}>
-                    <img
-                      src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                    />
-                  </SLink>
+                  <MovieWrapper
+                    id={item.id}
+                    onMouseEnter={bringVideo}
+                    onMouseLeave={setClearTime}
+                  >
+                    <SLink to={`/${item.id}`}>
+                      <img
+                        src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                      />
+                    </SLink>
+                  </MovieWrapper>
                 ))
               : ""}
+            {data !== {}
+              ? data["nowPlaying"].map((item, index) =>
+                  index < 10 ? (
+                    <MovieWrapper
+                      id={item.id}
+                      onMouseEnter={bringVideo}
+                      onMouseLeave={setClearTime}
+                    >
+                      <SLink to={`/${item.id}`}>
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                        />
+                      </SLink>
+                    </MovieWrapper>
+                  ) : (
+                    ""
+                  )
+                )
+              : ""}
           </MoviesWrapper>
+          <IconWrapper id="left" onClick={handleSlider}>
+            <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
+          </IconWrapper>
+          <IconWrapper id="right" onClick={handleSlider}>
+            <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
+          </IconWrapper>
         </SectionWrapper>
         <SectionWrapper>
           <h1>UpComing</h1>
           <MoviesWrapper>
             {data !== {}
+              ? data["upComing"].map((item, index) =>
+                  index > 9 ? (
+                    <MovieWrapper
+                      id={item.id}
+                      onMouseEnter={bringVideo}
+                      onMouseLeave={setClearTime}
+                    >
+                      <SLink to={`/${item.id}`}>
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                        />
+                      </SLink>
+                    </MovieWrapper>
+                  ) : (
+                    ""
+                  )
+                )
+              : ""}
+            {data !== {}
               ? data["upComing"].map((item) => (
-                  <SLink to={`/${item.id}`}>
-                    <img
-                      src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                    />
-                  </SLink>
+                  <MovieWrapper
+                    id={item.id}
+                    onMouseEnter={bringVideo}
+                    onMouseLeave={setClearTime}
+                  >
+                    <SLink to={`/${item.id}`}>
+                      <img
+                        src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                      />
+                    </SLink>
+                  </MovieWrapper>
                 ))
               : ""}
+            {data !== {}
+              ? data["upComing"].map((item, index) =>
+                  index < 10 ? (
+                    <MovieWrapper
+                      id={item.id}
+                      onMouseEnter={bringVideo}
+                      onMouseLeave={setOriginal}
+                    >
+                      <SLink to={`/${item.id}`}>
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                        />
+                      </SLink>
+                    </MovieWrapper>
+                  ) : (
+                    ""
+                  )
+                )
+              : ""}
           </MoviesWrapper>
+          <IconWrapper id="left" onClick={handleSlider}>
+            <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
+          </IconWrapper>
+          <IconWrapper id="right" onClick={handleSlider}>
+            <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
+          </IconWrapper>
         </SectionWrapper>
       </ContentWrapper>
       <SearchPage></SearchPage>
