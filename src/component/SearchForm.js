@@ -21,13 +21,12 @@ const Container = styled.form`
 `;
 
 const SearchForm = ({ search, doSearch, notSearch }) => {
-  console.log(search);
   const onSubmit = (e) => {
     e.preventDefault();
     // 검색 기능
 
     //검색후 기능  search state는 ""로 셋팅해준다.
-    notSearch();
+    // notSearch();
   };
 
   const onChange = (e) => {
@@ -43,6 +42,7 @@ const SearchForm = ({ search, doSearch, notSearch }) => {
         placeholder="Search"
         value={search.text}
         onChange={onChange}
+        className="searchInput"
       ></input>
     </Container>
   );

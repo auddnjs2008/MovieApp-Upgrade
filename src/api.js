@@ -28,6 +28,7 @@ export const moviesApi = {
       },
     }),
   videos: (id) => api.get(`movie/${id}/videos`),
+  images: (id) => api.get(`movie/${id}/images`),
 };
 
 //drama -Latest, popular, on_the_air
@@ -50,6 +51,7 @@ export const dramaApi = {
       },
     }),
   videos: (id) => api.get(`tv/${id}/videos`),
+  images: (id) => api.get(`tv/${id}/images`),
 };
 
 export default api;
