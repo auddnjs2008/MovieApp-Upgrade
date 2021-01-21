@@ -29,6 +29,9 @@ export const moviesApi = {
     }),
   videos: (id) => api.get(`movie/${id}/videos`),
   images: (id) => api.get(`movie/${id}/images`),
+  peoples: (id) => api.get(`movie/${id}/credits`),
+  reviews: (id) => api.get(`movie/${id}/reviews`),
+  similar: (id) => api.get(`movie/${id}/similar`),
 };
 
 //drama -Latest, popular, on_the_air
@@ -37,7 +40,7 @@ export const dramaApi = {
   lates: () => api.get("tv/latest"),
   popular: () => api.get("tv/popular"),
   onAir: () => api.get("tv/on_the_air"),
-  airToday: () => api.get("tv/airing_today"),
+  topRated: () => api.get("tv/top_rated"),
   detail: (id) =>
     api.get(`tv/${id}`, {
       params: {
@@ -52,6 +55,9 @@ export const dramaApi = {
     }),
   videos: (id) => api.get(`tv/${id}/videos`),
   images: (id) => api.get(`tv/${id}/images`),
+  peoples: (id) => api.get(`tv/${id}/credits`),
+  reviews: (id) => api.get(`tv/${id}/reviews`),
+  similar: (id) => api.get(`tv/${id}/similar`),
 };
 
 export default api;

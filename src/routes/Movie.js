@@ -200,40 +200,48 @@ const Movie = () => {
   // 포스터 위에 마우스를 올렸을때  영상이 재생되게 하는 함수 필요(영상데이터를 가져와야 한다.)
   const hoverVideo = (dataArray, videoId) => {
     const hoverBox = document.querySelector(".hoverBox");
+    let videoWrapper;
+    let title;
     if (hoverBox) {
-      const videoWrapper = document.createElement("div");
-      videoWrapper.style.position = "relative";
-      videoWrapper.style.height = "0";
-      videoWrapper.style.paddingBottom = "56.25%";
-
-      const video = document.createElement("iframe");
-      video.src = `https://www.youtube.com/embed/${dataArray[0].key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&control=0&autoplay=1&mute=1&amp;loop=1;playlist=${dataArray[0].key}`;
-      video.frameborder = "0";
-      video.width = "100%";
-      video.height = "100%";
-      video.allow =
-        "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
-      video.style.position = "absolute";
-      video.style.left = "0";
-      video.style.top = "0";
-      video.style.width = "100%";
-      video.style.height = "100%";
-      videoWrapper.appendChild(video);
+      if (dataArray.length !== 0) {
+        videoWrapper = document.createElement("div");
+        videoWrapper.style.position = "relative";
+        videoWrapper.style.height = "0";
+        videoWrapper.style.paddingBottom = "56.25%";
+        const video = document.createElement("iframe");
+        video.src = `https://www.youtube.com/embed/${dataArray[0].key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&control=0&autoplay=1&mute=1&amp;loop=1;playlist=${dataArray[0].key}`;
+        video.frameborder = "0";
+        video.width = "100%";
+        video.height = "100%";
+        video.allow =
+          "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+        video.style.position = "absolute";
+        video.style.left = "0";
+        video.style.top = "0";
+        video.style.width = "100%";
+        video.style.height = "100%";
+        videoWrapper.appendChild(video);
+        title = document.createElement("h4");
+        title.innerText = dataArray[0].name.split("|")[0].split("Trailer")[0];
+      } else {
+        // 비디오가 없을 경우  이미지 넣어주기
+        videoWrapper = document.createElement("img");
+        videoWrapper.src =
+          "https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG";
+      }
       // 제목이랑  상세정보 보기 버튼이 필요하다.
-      const title = document.createElement("h4");
-      title.innerText = dataArray[0].name.split("|")[0].split("Trailer")[0];
 
       const btnWrapper = document.createElement("div");
 
       const shareBtn = document.createElement("button");
       shareBtn.innerText = "+";
       const link = document.createElement("a");
-      link.href = `/#/${videoId}`;
+      link.href = `/#/${videoId}/movie`;
       link.innerText = "상세정보";
       btnWrapper.appendChild(shareBtn);
       btnWrapper.appendChild(link);
       hoverBox.appendChild(videoWrapper);
-      hoverBox.appendChild(title);
+      if (title) hoverBox.appendChild(title);
       hoverBox.appendChild(btnWrapper);
     }
     //<iframe width="246" height="200" src="https://www.youtube.com/embed/F40YOxvwTjg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -374,7 +382,7 @@ const Movie = () => {
               ? data["latest"].overview
               : data["latest"].overview.substring(0, 110) + "..."}
           </p>
-          <SLink to={`/${data["latest"].id}`}>
+          <SLink to={`/${data["latest"].id}/movie`}>
             <button>상세정보</button>
           </SLink>
         </HeaderInfo>
@@ -392,7 +400,7 @@ const Movie = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/movie`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -410,7 +418,7 @@ const Movie = () => {
                     onMouseEnter={bringVideo}
                     onMouseLeave={setClearTime}
                   >
-                    <SLink to={`/${item.id}`}>
+                    <SLink to={`/${item.id}/movie`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
@@ -426,7 +434,7 @@ const Movie = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/movie`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -456,7 +464,7 @@ const Movie = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/movie`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -474,7 +482,7 @@ const Movie = () => {
                     onMouseEnter={bringVideo}
                     onMouseLeave={setClearTime}
                   >
-                    <SLink to={`/${item.id}`}>
+                    <SLink to={`/${item.id}/movie`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
@@ -490,7 +498,7 @@ const Movie = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/movie`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -520,7 +528,7 @@ const Movie = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/movie`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -538,7 +546,7 @@ const Movie = () => {
                     onMouseEnter={bringVideo}
                     onMouseLeave={setClearTime}
                   >
-                    <SLink to={`/${item.id}`}>
+                    <SLink to={`/${item.id}/movie`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
@@ -554,7 +562,7 @@ const Movie = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setOriginal}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/movie`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />

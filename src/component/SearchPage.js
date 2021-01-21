@@ -17,6 +17,7 @@ const Container = styled.div`
   width: 100vw;
   background-color: rgba(149, 175, 192, 1);
   padding: 20px;
+  z-index: 100;
   position: absolute;
   top: ${(props) => `${props.scroll + 60}px`};
   display: grid;
@@ -27,6 +28,7 @@ const Container = styled.div`
 const MovieSearchWrapper = styled.section`
   text-align: center;
   width: 80%;
+
   h1 {
     font-size: 30px;
     font-weight: 600;
@@ -37,9 +39,13 @@ const MovieSearchWrapper = styled.section`
 const DramaSearchWrapper = styled.section`
   width: 80%;
   text-align: center;
+  align-self: start;
 
   h1 {
-    font-size: 20px;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    margin-top: 5px;
   }
   margin-bottom: 50px;
 `;
@@ -48,7 +54,7 @@ const PosterWrapper = styled.ul`
   width: 100%;
   overflow: auto;
   scroll-behavior: smooth;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -56,9 +62,14 @@ const PosterWrapper = styled.ul`
 
 const Poster = styled.li`
   margin-right: 25px;
+  span {
+    font-size: 10px;
+    font-weight: 600;
+  }
   img {
-    width: 70px;
+    width: 90px;
     height: 100px;
+    object-fit: contain;
   }
 `;
 const IconWrapper = styled.div`
@@ -168,6 +179,7 @@ const SearchPage = ({ search, noSearch }) => {
                           : "https://usecloud.s3-ap-northeast-1.amazonaws.com/kakaoMapIcon/movie.jpg"
                       }
                     />
+                    <span>{item.original_title}</span>
                   </Poster>
                 </Link>
               ))
@@ -213,6 +225,7 @@ const SearchPage = ({ search, noSearch }) => {
                           : "https://usecloud.s3-ap-northeast-1.amazonaws.com/kakaoMapIcon/movie.jpg"
                       }
                     />
+                    <span>{item.name}</span>
                   </Poster>
                 </Link>
               ))

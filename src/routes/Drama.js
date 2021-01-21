@@ -73,6 +73,12 @@ const ContentWrapper = styled.div`
 
     animation: hoverMove 0.2s linear forwards;
 
+    img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+
     h4 {
       font-size: 10px;
       text-align: center;
@@ -202,7 +208,7 @@ const Drama = () => {
       const shareBtn = document.createElement("button");
       shareBtn.innerText = "+";
       const link = document.createElement("a");
-      link.href = `/#/${videoId}`;
+      link.href = `/#/${videoId}/tv`;
       link.innerText = "상세정보";
       btnWrapper.appendChild(shareBtn);
       btnWrapper.appendChild(link);
@@ -336,14 +342,14 @@ const Drama = () => {
     } = await dramaApi.onAir();
 
     const {
-      data: { results: airToday },
-    } = await dramaApi.airToday();
+      data: { results: topRated },
+    } = await dramaApi.topRated();
 
     const Random = Math.floor(Math.random() * (onAir.length - 1)) + 1;
     const latestVideo = (await dramaApi.videos(parseInt(onAir[Random].id))).data
       .results;
     const latest = onAir[Random];
-    setData({ popular, onAir, airToday, latest, latestVideo });
+    setData({ popular, onAir, topRated, latest, latestVideo });
   }, []);
 
   return Object.keys(data).length !== 0 ? (
@@ -374,7 +380,7 @@ const Drama = () => {
               ? data["latest"].overview
               : data["latest"].overview.substring(0, 110) + "..."}
           </p>
-          <SLink to={`/${data["latest"].id}`}>
+          <SLink to={`/${data["latest"].id}/tv`}>
             <button>상세정보</button>
           </SLink>
         </HeaderInfo>
@@ -392,7 +398,7 @@ const Drama = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/tv`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -411,7 +417,7 @@ const Drama = () => {
                     onMouseEnter={bringVideo}
                     onMouseLeave={setClearTime}
                   >
-                    <SLink to={`/${item.id}`}>
+                    <SLink to={`/${item.id}/tv`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
@@ -427,7 +433,7 @@ const Drama = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/tv`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -458,7 +464,7 @@ const Drama = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/tv`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -476,7 +482,7 @@ const Drama = () => {
                     onMouseEnter={bringVideo}
                     onMouseLeave={setClearTime}
                   >
-                    <SLink to={`/${item.id}`}>
+                    <SLink to={`/${item.id}/tv`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
@@ -492,7 +498,7 @@ const Drama = () => {
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/tv`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -512,17 +518,17 @@ const Drama = () => {
           </IconWrapper>
         </SectionWrapper>
         <SectionWrapper>
-          <h1>air-Today</h1>
+          <h1>Top-Rated</h1>
           <DramasWrapper>
             {data !== {}
-              ? data["airToday"].map((item, index) =>
+              ? data["topRated"].map((item, index) =>
                   index > 9 ? (
                     <DramaWrapper
                       id={item.id}
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/tv`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
@@ -534,13 +540,13 @@ const Drama = () => {
                 )
               : ""}
             {data !== {}
-              ? data["airToday"].map((item) => (
+              ? data["topRated"].map((item) => (
                   <DramaWrapper
                     id={item.id}
                     onMouseEnter={bringVideo}
                     onMouseLeave={setClearTime}
                   >
-                    <SLink to={`/${item.id}`}>
+                    <SLink to={`/${item.id}/tv`}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
@@ -549,14 +555,14 @@ const Drama = () => {
                 ))
               : ""}
             {data !== {}
-              ? data["airToday"].map((item, index) =>
+              ? data["topRated"].map((item, index) =>
                   index < 10 ? (
                     <DramaWrapper
                       id={item.id}
                       onMouseEnter={bringVideo}
                       onMouseLeave={setClearTime}
                     >
-                      <SLink to={`/${item.id}`}>
+                      <SLink to={`/${item.id}/tv`}>
                         <img
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
