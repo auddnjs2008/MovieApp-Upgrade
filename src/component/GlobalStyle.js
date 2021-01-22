@@ -7,7 +7,8 @@ const GlobalStyle = createGlobalStyle`
         //background-color:rgba(20,20,20,0.9);
         background-color:black;
       
-       // overflow-x:hidden;
+       overflow-x:hidden;
+      
     }
 
 
