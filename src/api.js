@@ -60,4 +60,6 @@ export const dramaApi = {
   similar: (id) => api.get(`tv/${id}/similar`),
 };
 
+export const actorApi = (id) => api.get(`/credit/${id}`);
+
 export default api;

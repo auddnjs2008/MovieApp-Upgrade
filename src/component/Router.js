@@ -6,6 +6,7 @@ import {
   Redirect,
   Switch,
 } from "react-router-dom";
+import Actor from "../routes/Actor";
 import Auth from "../routes/Auth";
 import Detail from "../routes/Detail";
 import Drama from "../routes/Drama";
@@ -28,6 +29,9 @@ const APPRouter = ({ user }) => {
             </Route>
             <Route path="/mypage">
               <MyPage />
+            </Route>
+            <Route path="/actor/:id">
+              <Actor />
             </Route>
             <Route path="/:id">
               <Detail />

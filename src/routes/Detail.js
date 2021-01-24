@@ -61,6 +61,12 @@ const ItemRelated = styled.section`
   top: 0;
   width: 47%;
   height: 95%;
+  h1 {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+  }
 `;
 const ItemMessage = styled.section`
   position: absolute;
@@ -81,13 +87,14 @@ const ItemActor = styled.section`
       font-weight: 600;
     }
     .reviewWrapper {
-      border: 10px solid red;
-      margin-top: 50px;
+      margin-top: 30px;
       padding: 20px;
+      overflow: auto;
+      height: 400px;
       div.review {
+        margin-bottom: 20px;
         div {
           font-size: 15px;
-          border: 1px solid black;
           width: 60px;
           margin-bottom: 5px;
           img {
@@ -98,6 +105,16 @@ const ItemActor = styled.section`
             align-items: center;
             object-fit: cover;
           }
+        }
+        p {
+          border: 2px solid black;
+          background-color: rgba(64, 115, 158, 1);
+          color: white;
+          padding: 15px;
+          line-height: 1.2;
+          border-radius: 20px;
+          border-bottom-left-radius: 0;
+          margin-bottom: 5px;
         }
       }
     }
@@ -269,7 +286,43 @@ const ActorWrapper = styled.div`
   }
 `;
 
-const RelatedWrapper = styled.div``;
+const RelatedWrapper = styled.div`
+  div.relatedBox {
+    margin-top: 30px;
+    display: grid;
+    grid-auto-rows: 1fr;
+    row-gap: 10px;
+    padding: 10px;
+    height: 400px;
+    overflow: auto;
+
+    div.itemWrapper {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      background-color: rgba(64, 115, 158, 0.6);
+      padding: 10px;
+      border-radius: 10px;
+      gap: 10px;
+      &:hover {
+        background-color: rgba(15, 15, 15, 0.8);
+        color: white;
+      }
+      img {
+        width: 100px;
+        height: 130px;
+      }
+      div.relatedContent {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        h2 {
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+`;
 
 const ArrowRapper = styled.span`
   #right,
@@ -395,21 +448,39 @@ const Detail = () => {
         <ItemMessage>
           <BackPage className="backPage"></BackPage>
         </ItemMessage>
-        <ItemMessage>
+        <ItemRelated>
           <RelatedWrapper>
-            {data["similar"].results.length
-              ? data["similar"].results.map((item) => (
-                  <div>
-                    <img
-                      src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                    />
-                    <span>{item.original_title}</span>
-                  </div>
-                ))
-              : ""}
+            <h1>Related</h1>
+            <div className="relatedBox">
+              {data["similar"].results.length
+                ? data["similar"].results.map((item) => (
+                    <Link
+                      to={`/${item.id}/${data.type}`}
+                      onClick={() =>
+                        setTimeout(() => window.location.reload(), 50)
+                      }
+                    >
+                      <div className="itemWrapper">
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                        />
+                        <div className="relatedContent">
+                          <h2>
+                            {item.original_name
+                              ? item.original_name
+                              : item.original_title}
+                          </h2>
+                          <div>⭐{item.vote_average}</div>
+                          <div>{item.release_date}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                : ""}
+            </div>
           </RelatedWrapper>
           <BackPage className="backPage"></BackPage>
-        </ItemMessage>
+        </ItemRelated>
         <ItemActor>
           <ActorWrapper>
             <h1>Actors</h1>
@@ -426,7 +497,7 @@ const Detail = () => {
                       ></img>
                       <div className="actorInfo">
                         <div>{item.name}</div>
-                        <Link>
+                        <Link to={`/actor/${item.credit_id}`}>
                           <button>Detail</button>
                         </Link>
                       </div>
