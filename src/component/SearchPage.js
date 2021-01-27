@@ -13,17 +13,28 @@ import { searchActionCreator } from "../store/modules/Search";
 import { Link } from "react-router-dom";
 
 const Container = styled.div`
-  height: 100%;
-  width: 100vw;
+  height: 90vh;
+  width: 90vw;
   background-color: rgba(149, 175, 192, 1);
+  border-radius: 20px;
   padding: 20px;
   z-index: 100;
   position: absolute;
-  top: ${(props) => `${props.scroll + 60}px`};
+  top: ${(props) => `${props.scroll + 40}px`};
   display: grid;
   grid-template-rows: repeat(2, 1fr);
-  grid-template-columns: 100vw;
+  grid-template-columns: 90vw;
   justify-items: center;
+  justify-content: center;
+  @keyframes SearchMove {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  animation: SearchMove 0.3s linear forwards;
 `;
 const MovieSearchWrapper = styled.section`
   text-align: center;
@@ -170,7 +181,10 @@ const SearchPage = ({ search, noSearch }) => {
         <PosterWrapper className="movieContainer">
           {mov && mov.length !== 0
             ? mov.map((item) => (
-                <Link to={`/${item.id}`}>
+                <Link
+                  to={`/${item.id}/movie`}
+                  onClick={() => setTimeout(() => window.location.reload(), 50)}
+                >
                   <Poster>
                     <img
                       src={
@@ -216,7 +230,10 @@ const SearchPage = ({ search, noSearch }) => {
         <PosterWrapper className="tvContainer">
           {tv && tv.length !== 0
             ? tv.map((item) => (
-                <Link to={`/${item.id}`}>
+                <Link
+                  to={`/${item.id}/tv`}
+                  onClick={() => setTimeout(() => window.location.reload(), 50)}
+                >
                   <Poster>
                     <img
                       src={

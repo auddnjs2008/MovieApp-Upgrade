@@ -9,6 +9,11 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
+import { myListActionCreator } from "../store/modules/MyList";
+import { authService, storeService } from "../fbase";
+import { queryAllByAttribute } from "@testing-library/react";
+import { errorACtionCreator } from "../store/modules/Error";
 
 const Container = styled.div`
   width: 100%;
@@ -163,10 +168,30 @@ const MovieWrapper = styled.div`
 
 const SLink = styled(Link)``;
 
-const Movie = () => {
+const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
   const [data, setData] = useState({}); // popular, nowPlaying upComing  -> data.results에 존재
   const [width, setWidth] = useState(window.innerWidth);
   const [testTimer, setTimer] = useState(null);
+
+  const findData = async () => {
+    let testArray = [];
+    const test = await storeService
+      .collection(`mwFlix-${uid}`)
+      .get(queryAllByAttribute);
+
+    test.forEach((item) =>
+      testArray.push({
+        id: parseInt(item.data().id),
+        content: item.data().type,
+      })
+    );
+
+    bunchPush(testArray);
+  };
+
+  useEffect(() => {
+    if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
+  }, []);
 
   useEffect(() => {
     window.addEventListener("resize", () => setWidth(window.innerWidth));
@@ -196,6 +221,34 @@ const Movie = () => {
 
     setData({ popular, nowPlaying, upComing, latest, latestVideo });
   }, []);
+
+  // +버튼을 누르면  내 목록에 추가한다. // 단 내목록에 추가할때  id만 추가하고  내 목록페이지에 갔을때  api로 찾아준다.
+  const handleShareBtn = async (e) => {
+    const {
+      currentTarget: {
+        parentNode: {
+          parentNode: { id },
+        },
+      },
+    } = e;
+
+    // 이미 저장되있는지 판별해야 한다.
+    let save = 1;
+    const test = await storeService
+      .collection(`mwFlix-${uid}`)
+      .get(queryAllByAttribute);
+
+    test.forEach((item) =>
+      parseInt(item.data().id) === parseInt(id) ? (save = 0) : (save = 1)
+    ); // 아이다가 같으면 save해주지 않는다.
+    if (save) {
+      const data = { id: parseInt(id), creator: uid, type: "movie" };
+      await storeService.collection(`mwFlix-${uid}`).add(data);
+      listPush(parseInt(id), "movie");
+    } else {
+      errorText("이미 저장되어있는 영화입니다.");
+    }
+  };
 
   // 포스터 위에 마우스를 올렸을때  영상이 재생되게 하는 함수 필요(영상데이터를 가져와야 한다.)
   const hoverVideo = (dataArray, videoId) => {
@@ -235,6 +288,7 @@ const Movie = () => {
 
       const shareBtn = document.createElement("button");
       shareBtn.innerText = "+";
+      shareBtn.addEventListener("click", handleShareBtn);
       const link = document.createElement("a");
       link.href = `/#/${videoId}/movie`;
       link.innerText = "상세정보";
@@ -260,6 +314,7 @@ const Movie = () => {
 
       const hoverBox = document.createElement("div");
       hoverBox.className = "hoverBox";
+      hoverBox.id = id;
       hoverBox.style.position = "absolute";
       hoverBox.style.top = String(where.y + window.scrollY) + "px";
       hoverBox.style.left = String(where.x) + "px";
@@ -589,4 +644,17 @@ const Movie = () => {
   );
 };
 
-export default Movie;
+const mapStateToProps = (state, ownProps) => {
+  console.log(state);
+  return { MyList: state.MyList, uid: state.User.user.uid };
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    listPush: (id, content) =>
+      dispatch(myListActionCreator.dataPush(id, content)),
+    bunchPush: (data) => dispatch(myListActionCreator.dataBunchPush(data)),
+    errorText: (text) => dispatch(errorACtionCreator.error(text)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Movie);

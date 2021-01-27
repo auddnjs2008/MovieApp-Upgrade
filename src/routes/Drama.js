@@ -9,6 +9,11 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { storeService } from "../fbase";
+import { queryAllByAttribute } from "@testing-library/react";
+import { connect } from "react-redux";
+import { myListActionCreator } from "../store/modules/MyList";
+import { errorACtionCreator } from "../store/modules/Error";
 
 const Container = styled.div`
   width: 100%;
@@ -165,10 +170,37 @@ const IconWrapper = styled.div`
     right: 0;
   }
 `;
-const Drama = () => {
+const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
   const [data, setData] = useState({});
   const [width, setWidth] = useState(window.innerWidth);
   const [testTimer, setTimer] = useState(null);
+
+  const handleShareBtn = async (e) => {
+    const {
+      currentTarget: {
+        parentNode: {
+          parentNode: { id },
+        },
+      },
+    } = e;
+
+    // 이미 저장되있는지 판별해야 한다.
+    let save = 1;
+    const test = await storeService
+      .collection(`mwFlix-${uid}`)
+      .get(queryAllByAttribute);
+
+    test.forEach((item) =>
+      parseInt(item.data().id) === parseInt(id) ? (save = 0) : (save = 1)
+    ); // 아이다가 같으면 save해주지 않는다.
+    if (save) {
+      const data = { id: parseInt(id), creator: uid, type: "drama" };
+      await storeService.collection(`mwFlix-${uid}`).add(data);
+      listPush(parseInt(id), "drama");
+    } else {
+      errorText("이미 저장되어있는 드라마입니다.");
+    }
+  };
 
   const hoverVideo = (dataArray, videoId) => {
     const hoverBox = document.querySelector(".hoverBox");
@@ -207,6 +239,8 @@ const Drama = () => {
 
       const shareBtn = document.createElement("button");
       shareBtn.innerText = "+";
+      shareBtn.addEventListener("click", handleShareBtn);
+
       const link = document.createElement("a");
       link.href = `/#/${videoId}/tv`;
       link.innerText = "상세정보";
@@ -232,6 +266,7 @@ const Drama = () => {
 
       const hoverBox = document.createElement("div");
       hoverBox.className = "hoverBox";
+      hoverBox.id = id;
       hoverBox.style.position = "absolute";
       hoverBox.style.top = String(where.y + window.scrollY) + "px";
       hoverBox.style.left = String(where.x) + "px";
@@ -324,6 +359,25 @@ const Drama = () => {
       }
     }
   };
+  const findData = async () => {
+    let testArray = [];
+    const test = await storeService
+      .collection(`mwFlix-${uid}`)
+      .get(queryAllByAttribute);
+
+    test.forEach((item) =>
+      testArray.push({
+        id: parseInt(item.data().id),
+        content: item.data().type,
+      })
+    );
+
+    bunchPush(testArray);
+  };
+
+  useEffect(() => {
+    if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
+  }, []);
 
   useEffect(() => {
     window.addEventListener("resize", () => setWidth(window.innerWidth));
@@ -588,4 +642,18 @@ const Drama = () => {
     "Loading..."
   );
 };
-export default Drama;
+
+const mapStateToProps = (state, ownProps) => {
+  return { MyList: state.MyList, uid: state.User.user.uid };
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    listPush: (id, content) =>
+      dispatch(myListActionCreator.dataPush(id, content)),
+    bunchPush: (data) => dispatch(myListActionCreator.dataBunchPush(data)),
+    errorText: (text) => dispatch(errorACtionCreator.error(text)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Drama);

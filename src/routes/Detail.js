@@ -9,6 +9,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import SearchPage from "../component/SearchPage";
 
 const ShadowBox = styled.div`
   width: 100vw;
@@ -29,11 +30,13 @@ const Container = styled.div`
   padding: 20px;
 
   section {
+    box-shadow: -10px 5px 1px rgba(247, 241, 227, 1), inset 5px -5px 1px black;
     transform-origin: 0% 50%;
     border-radius: 20px;
     background-color: rgba(247, 241, 227, 1);
+    border: 1px solid black;
     margin-left: 50%;
-    // box-shadow: 10px 4px 1px rgba(20, 20, 20, 0.9);
+    padding: 5px;
     @keyframes bookNext {
       0% {
         transform: perspective(1800px) rotateY(0deg);
@@ -115,6 +118,33 @@ const ItemActor = styled.section`
           border-radius: 20px;
           border-bottom-left-radius: 0;
           margin-bottom: 5px;
+        }
+      }
+      .noReviews {
+        margin: 0 auto;
+        margin-top: 20px;
+        position: relative;
+
+        width: 200px;
+        img {
+          max-width: 200px;
+          max-height: 200px;
+          object-fit: contain;
+        }
+        div {
+          position: absolute;
+          top: 0;
+          left: 120px;
+          border: 1px solid black;
+          background-color: rgba(64, 115, 158, 1);
+          color: white;
+          border-radius: 20px;
+          border-bottom-left-radius: 0;
+          width: 200px;
+          height: 50px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
       }
     }
@@ -221,8 +251,8 @@ const BackPage = styled.div`
 `;
 const VideoWrapper = styled.div`
   //display: flex;
-  margin-top: 40%;
-  transform: translateY(-50%);
+  margin-top: 30px;
+  //transform: translateY(-50%);
   overflow: auto;
   padding: 5px;
   height: 55vh;
@@ -236,6 +266,32 @@ const VideoWrapper = styled.div`
       top: 0;
       width: 100%;
       height: 100%;
+    }
+  }
+  .noVideos {
+    margin: 0 auto;
+    position: relative;
+
+    width: 200px;
+    img {
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+    }
+    div {
+      position: absolute;
+      top: 0;
+      left: 120px;
+      border: 1px solid black;
+      background-color: rgba(64, 115, 158, 1);
+      color: white;
+      border-radius: 20px;
+      border-bottom-left-radius: 0;
+      width: 200px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 `;
@@ -252,6 +308,7 @@ const ActorWrapper = styled.div`
     height: 70vh;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+
     gap: 5px;
     padding: 20px;
     //justify-items: center;
@@ -265,10 +322,12 @@ const ActorWrapper = styled.div`
       }
       div.actorInfo {
         margin-left: 10px;
+        height: 130px;
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: flex-start;
         button {
+          margin-top: 20px;
           width: 40px;
           height: 25px;
           border: none;
@@ -282,6 +341,35 @@ const ActorWrapper = styled.div`
           }
         }
       }
+    }
+  }
+  .noActors {
+    margin: 0 auto;
+    margin-top: 70px;
+    position: relative;
+
+    width: 200px;
+    height: 200px;
+    justify-self: center;
+    img {
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+    }
+    div {
+      position: absolute;
+      top: 0;
+      left: 120px;
+      border: 1px solid black;
+      background-color: rgba(64, 115, 158, 1);
+      color: white;
+      border-radius: 20px;
+      border-bottom-left-radius: 0;
+      width: 200px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 `;
@@ -322,13 +410,42 @@ const RelatedWrapper = styled.div`
       }
     }
   }
+  .noRelative {
+    margin: 0 auto;
+    margin-top: 70px;
+    position: relative;
+
+    width: 200px;
+    height: 200px;
+    justify-self: center;
+    img {
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+    }
+    div {
+      position: absolute;
+      top: 0;
+      left: 120px;
+      border: 1px solid black;
+      background-color: rgba(64, 115, 158, 1);
+      color: white;
+      border-radius: 20px;
+      border-bottom-left-radius: 0;
+      width: 200px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 `;
 
 const ArrowRapper = styled.span`
   #right,
   #left {
     z-index: 15;
-    color: white;
+    color: rgb(231, 76, 60);
     font-size: 50px;
     position: absolute;
     top: 50%;
@@ -377,15 +494,19 @@ const Detail = () => {
     if (cards) {
       if (direction === "left" && change) {
         cards[5 - index].style.animation = "bookPrev 1s linear forwards";
-        setTimeout(() => (cards[5 - index].style.zIndex = "0"), 500);
+        setTimeout(() => {
+          cards[5 - index].style.zIndex = "0";
+          cards[5 - index].style.boxShadow =
+            "-10px 5px 1px rgba(247, 241, 227, 1), inset 5px -5px 1px black";
+        }, 500);
         cards[5 - index].childNodes[1].style.display = "none";
         cards[5 - index].childNodes[0].style.display = "block";
       } else if (direction === "right" && change) {
         cards[5 - (index - 1)].style.animation = "bookNext 1s linear forwards";
-        setTimeout(
-          () => (cards[5 - (index - 1)].style.zIndex = `${index - 1}`),
-          500
-        );
+        setTimeout(() => {
+          cards[5 - (index - 1)].style.zIndex = `${index - 1}`;
+          cards[5 - (index - 1)].style.boxShadow = "none";
+        }, 500);
         cards[5 - (index - 1)].childNodes[0].style.display = "none";
         cards[5 - (index - 1)].childNodes[1].style.transform =
           "rotateY(180deg)";
@@ -451,76 +572,91 @@ const Detail = () => {
         <ItemRelated>
           <RelatedWrapper>
             <h1>Related</h1>
-            <div className="relatedBox">
-              {data["similar"].results.length
-                ? data["similar"].results.map((item) => (
-                    <Link
-                      to={`/${item.id}/${data.type}`}
-                      onClick={() =>
-                        setTimeout(() => window.location.reload(), 50)
-                      }
-                    >
-                      <div className="itemWrapper">
-                        <img
-                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                        />
-                        <div className="relatedContent">
-                          <h2>
-                            {item.original_name
-                              ? item.original_name
-                              : item.original_title}
-                          </h2>
-                          <div>⭐{item.vote_average}</div>
-                          <div>{item.release_date}</div>
-                        </div>
+            {data["similar"].results.length ? (
+              <div className="relatedBox">
+                {data["similar"].results.map((item) => (
+                  <Link
+                    to={`/${item.id}/${data.type}`}
+                    onClick={() =>
+                      setTimeout(() => window.location.reload(), 50)
+                    }
+                  >
+                    <div className="itemWrapper">
+                      <img
+                        src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                      />
+                      <div className="relatedContent">
+                        <h2>
+                          {item.original_name
+                            ? item.original_name
+                            : item.original_title}
+                        </h2>
+                        <div>⭐{item.vote_average}</div>
+                        <div>{item.release_date}</div>
                       </div>
-                    </Link>
-                  ))
-                : ""}
-            </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="noRelative">
+                <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A43.PNG" />
+                <div>There are no Information</div>
+              </div>
+            )}
           </RelatedWrapper>
           <BackPage className="backPage"></BackPage>
         </ItemRelated>
         <ItemActor>
           <ActorWrapper>
             <h1>Actors</h1>
-            <div className="actorWrapper">
-              {data["actors"].cast.length
-                ? data["actors"].cast.map((item) => (
-                    <div className="actorProfile">
-                      <img
-                        src={
-                          item.profile_path
-                            ? `https://image.tmdb.org/t/p/w300${item.profile_path}`
-                            : "https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG"
-                        }
-                      ></img>
-                      <div className="actorInfo">
-                        <div>{item.name}</div>
-                        <Link to={`/actor/${item.credit_id}`}>
-                          <button>Detail</button>
-                        </Link>
-                      </div>
+            {data["actors"].cast.length ? (
+              <div className="actorWrapper">
+                {data["actors"].cast.map((item) => (
+                  <div className="actorProfile">
+                    <img
+                      src={
+                        item.profile_path
+                          ? `https://image.tmdb.org/t/p/w300${item.profile_path}`
+                          : "https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG"
+                      }
+                    ></img>
+                    <div className="actorInfo">
+                      <div>{item.name}</div>
+                      <Link to={`/actor/${item.credit_id}`}>
+                        <button>Detail</button>
+                      </Link>
                     </div>
-                  ))
-                : ""}
-            </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="noActors">
+                <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A43.PNG" />
+                <div>There are no Information</div>
+              </div>
+            )}
           </ActorWrapper>
           <BackPage className="backPage">
             <h1>Reviews</h1>
             <div className="reviewWrapper">
-              {data.reviews.results.length
-                ? data.reviews.results.map((item) => (
-                    <div className="review">
-                      <div>
-                        <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG"></img>
-                        <span>{item.author}</span>
-                      </div>
-                      <p>{item.content}</p>
-                      <span>{item.created_at}</span>
+              {data.reviews.results.length ? (
+                data.reviews.results.map((item) => (
+                  <div className="review">
+                    <div>
+                      <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG"></img>
+                      <span>{item.author}</span>
                     </div>
-                  ))
-                : ""}
+                    <p>{item.content}</p>
+                    <span>{item.created_at}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="noReviews">
+                  <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A42.PNG" />
+                  <div>There are no Reviews</div>
+                </div>
+              )}
             </div>
           </BackPage>
         </ItemActor>
@@ -532,18 +668,23 @@ const Detail = () => {
           <BackPage className="backPage">
             <h1>Videos</h1>
             <VideoWrapper>
-              {data.results.videos.results.length !== 0
-                ? data.results.videos.results.map((item) => (
-                    <div className="videoBox">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${item.key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&amp;loop=1;playlist=${item.key}`}
-                        frameborder="0"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullscreen
-                      ></iframe>
-                    </div>
-                  ))
-                : ""}
+              {data.results.videos.results.length !== 0 ? (
+                data.results.videos.results.map((item) => (
+                  <div className="videoBox">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${item.key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&amp;loop=1;playlist=${item.key}`}
+                      frameborder="0"
+                      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullscreen
+                    ></iframe>
+                  </div>
+                ))
+              ) : (
+                <div className="noVideos">
+                  <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A42.PNG" />
+                  <div>There are no Videos</div>
+                </div>
+              )}
             </VideoWrapper>
           </BackPage>
         </ItemInfo>
@@ -561,16 +702,19 @@ const Detail = () => {
           <BackPage className="backPage">
             <div className="semiInfo">
               <span>
-                <h5>Release</h5>
-                {data["results"].release_date}
+                <h5>
+                  {data["results"].release_data ? "Release" : "First_Air_Date"}
+                </h5>
+                {data["results"].release_date
+                  ? data["results"].release_data
+                  : data["results"].first_air_date}
               </span>
               <span>
                 <h5>Genres</h5>
                 {data["results"].genres.map((item) => item.name).join("/")}
               </span>
               <span>
-                <h5>Grade</h5>
-                {data["results"].vote_average}
+                <h5>Grade</h5>⭐{data["results"].vote_average}
               </span>
               <a
                 href={`https://www.imdb.com/title/${data["results"].imdb_id}`}
@@ -584,6 +728,7 @@ const Detail = () => {
           </BackPage>
         </ItemProfile>
       </Container>
+      <SearchPage></SearchPage>
       <ArrowRapper>
         <FontAwesomeIcon
           icon={faChevronLeft}

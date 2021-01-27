@@ -7,6 +7,7 @@ import { userActionCreator } from "../store/modules/User";
 import { errorACtionCreator } from "../store/modules/Error";
 import SocialLogin from "../component/SocialLogin";
 import ErrorMessage from "../component/ErrorMessage";
+import { myListActionCreator } from "../store/modules/MyList";
 
 const Container = styled.div``;
 
@@ -19,22 +20,20 @@ const Auth = ({ errorMessage, successMessage }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-
+    let user;
     try {
       if (!create) {
         // 로그인 처리해줘야 한다.
-        const user = await authService.signInWithEmailAndPassword(
-          email,
-          password
-        );
+        user = await authService.signInWithEmailAndPassword(email, password);
       } else if (create) {
         // 만들어주는 처리 해줘야 한다.
-        const user = await authService.createUserWithEmailAndPassword(
+        user = await authService.createUserWithEmailAndPassword(
           email,
           password
         );
       }
       successMessage();
+
       // state update가 필요하다.
     } catch (error) {
       errorMessage(error.message);
