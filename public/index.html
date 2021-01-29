@@ -12,6 +12,16 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
 
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script>
+      // SDK를 초기화 합니다. 사용할 앱의 JavaScript 키를 설정해 주세요.
+
+      Kakao.init("e71864b37cc86ad5d02090f99549f39d");
+
+      // SDK 초기화 여부를 판단합니다.
+      //console.log(Kakao.isInitialized());
+    </script>
+
     <title>MWFLix UPGrade</title>
   </head>
   <body>

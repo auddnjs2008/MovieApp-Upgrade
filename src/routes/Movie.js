@@ -645,7 +645,6 @@ const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
 };
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(state);
   return { MyList: state.MyList, uid: state.User.user.uid };
 };
 
