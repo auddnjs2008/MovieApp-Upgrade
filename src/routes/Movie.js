@@ -20,7 +20,7 @@ const Container = styled.div`
 `;
 const HeaderImage = styled.div`
   position: relative;
-  transform: translateY(-13%);
+  transform: ${(props) => (props.width <= 450 ? " " : "translateY(-13%)")};
   .Image {
     position: relative;
     height: 0;
@@ -36,12 +36,14 @@ const HeaderImage = styled.div`
 `;
 const HeaderInfo = styled.div`
   position: absolute;
-  top: ${(props) => (props.width > 800 ? "50%" : "10%")};
+
+  bottom: ${(props) => (props.width > 800 ? "10%" : "0")};
   left: 50px;
   color: white;
-  border: 2px solid yellow;
+  border: ${(props) => (props.width > 600 ? "2px solid yellow" : "")};
   border-radius: 10px;
   padding: 10px;
+  ${(props) => (props.width <= 600 ? "p{display:none} h1{display:none}" : "")}
   h1 {
     font-size: 30px;
     font-weight: 600;
@@ -66,7 +68,18 @@ const ContentWrapper = styled.div`
     width: 100px;
     height: 130px;
     color: white;
-
+    div.videoWrapper {
+      position: relative;
+      height: 0;
+      padding-bottom: 56.25%;
+      iframe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
     transform: translate(-25%, -25%);
     @keyframes hoverMove {
       0% {
@@ -80,25 +93,35 @@ const ContentWrapper = styled.div`
     animation: hoverMove 0.2s linear forwards;
 
     h4 {
-      font-size: 10px;
+      padding: 10px;
+      color: white;
+      font-size: 3px;
       text-align: center;
       margin: 5px 0px;
-      padding: 10px;
+      // padding: 10px;
     }
     div {
       display: flex;
       justify-content: space-evenly;
       align-items: center;
       button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 10px;
         height: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        border: none;
+        outline: none;
+        color: white;
+        background-color: rgba(64, 115, 158, 1);
+        border-radius: 5px;
+        &:active {
+          transform: scale(0.98, 0.98);
+        }
       }
       a {
         font-size: 10px;
-        border: 1px solid white;
+        border: 1px solid rgba(64, 115, 158, 1);
         padding: 3px;
         border-radius: 5px;
         cursor: pointer;
@@ -111,8 +134,9 @@ const ContentWrapper = styled.div`
 `;
 const SectionWrapper = styled.section`
   position: relative;
-  margin-bottom: 50px;
 
+  margin-bottom: 50px;
+  padding: 10px;
   h1 {
     color: white;
     font-size: 25px;
@@ -251,16 +275,14 @@ const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
   };
 
   // 포스터 위에 마우스를 올렸을때  영상이 재생되게 하는 함수 필요(영상데이터를 가져와야 한다.)
-  const hoverVideo = (dataArray, videoId) => {
+  const hoverVideo = (dataArray, videoId, name) => {
     const hoverBox = document.querySelector(".hoverBox");
     let videoWrapper;
     let title;
     if (hoverBox) {
       if (dataArray.length !== 0) {
         videoWrapper = document.createElement("div");
-        videoWrapper.style.position = "relative";
-        videoWrapper.style.height = "0";
-        videoWrapper.style.paddingBottom = "56.25%";
+        videoWrapper.className = "videoWrapper";
         const video = document.createElement("iframe");
         video.src = `https://www.youtube.com/embed/${dataArray[0].key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&control=0&autoplay=1&mute=1&amp;loop=1;playlist=${dataArray[0].key}`;
         video.frameborder = "0";
@@ -268,17 +290,17 @@ const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
         video.height = "100%";
         video.allow =
           "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
-        video.style.position = "absolute";
-        video.style.left = "0";
-        video.style.top = "0";
-        video.style.width = "100%";
-        video.style.height = "100%";
+
         videoWrapper.appendChild(video);
         title = document.createElement("h4");
-        title.innerText = dataArray[0].name.split("|")[0].split("Trailer")[0];
+
+        title.innerText =
+          name.length < 20 ? name : name.substring(0, 20) + "...";
       } else {
         // 비디오가 없을 경우  이미지 넣어주기
         videoWrapper = document.createElement("img");
+        videoWrapper.className = "videoWrapper";
+
         videoWrapper.src =
           "https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG";
       }
@@ -309,9 +331,14 @@ const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
         containerBox.removeChild(document.querySelector(".hoverBox"));
 
       const {
-        data: { results: videos, id: videoId },
-      } = await moviesApi.videos(parseInt(id));
+        data: {
+          videos: { results: videos },
+          id: videoId,
+          original_title: name,
+        },
+      } = await moviesApi.detail(parseInt(id));
 
+      console.log(videos, videoId, name);
       const hoverBox = document.createElement("div");
       hoverBox.className = "hoverBox";
       hoverBox.id = id;
@@ -321,7 +348,7 @@ const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
 
       hoverBox.addEventListener("mouseleave", setOriginal);
       containerBox.appendChild(hoverBox);
-      hoverVideo(videos, videoId);
+      hoverVideo(videos, videoId, name);
     }
   };
 
@@ -411,7 +438,7 @@ const Movie = ({ MyList, listPush, bunchPush, uid, errorText }) => {
 
   return Object.keys(data).length !== 0 ? (
     <Container>
-      <HeaderImage>
+      <HeaderImage width={width}>
         {data["latestVideo"]?.length !== 0 ? (
           <div className="Image">
             <iframe

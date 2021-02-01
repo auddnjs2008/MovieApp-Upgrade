@@ -20,7 +20,8 @@ const Container = styled.div`
 `;
 const HeaderImage = styled.div`
   position: relative;
-  transform: translateY(-13%);
+  transform: ${(props) => (props.width <= 450 ? " " : "translateY(-13%)")};
+
   .Image {
     position: relative;
     height: 0;
@@ -36,12 +37,16 @@ const HeaderImage = styled.div`
 `;
 const HeaderInfo = styled.div`
   position: absolute;
-  top: ${(props) => (props.width > 800 ? "50%" : "10%")};
+  bottom: ${(props) => (props.width > 800 ? "10%" : "0")};
+
   left: 50px;
   color: white;
-  border: 2px solid yellow;
+  border: ${(props) => (props.width > 600 ? "2px solid yellow" : "")};
+
   border-radius: 10px;
   padding: 10px;
+  ${(props) => (props.width <= 600 ? "p{display:none} h1{display:none}" : "")}
+
   h1 {
     font-size: 30px;
     font-weight: 600;
@@ -66,6 +71,18 @@ const ContentWrapper = styled.div`
     height: 130px;
     color: white;
 
+    div.videoWrapper {
+      position: relative;
+      height: 0;
+      padding-bottom: 56.25%;
+      iframe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
     transform: translate(-25%, -25%);
     @keyframes hoverMove {
       0% {
@@ -117,6 +134,7 @@ const ContentWrapper = styled.div`
 const SectionWrapper = styled.section`
   position: relative;
   margin-bottom: 50px;
+  padding: 10px;
 
   h1 {
     color: white;
@@ -209,9 +227,8 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
     if (hoverBox) {
       if (dataArray.length !== 0) {
         videoWrapper = document.createElement("div");
-        videoWrapper.style.position = "relative";
-        videoWrapper.style.height = "0";
-        videoWrapper.style.paddingBottom = "56.25%";
+        videoWrapper.className = "videoWrapper";
+
         const video = document.createElement("iframe");
         video.src = `https://www.youtube.com/embed/${dataArray[0].key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&control=0&autoplay=1&mute=1&amp;loop=1;playlist=${dataArray[0].key}`;
         video.frameborder = "0";
@@ -219,17 +236,14 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
         video.height = "100%";
         video.allow =
           "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
-        video.style.position = "absolute";
-        video.style.left = "0";
-        video.style.top = "0";
-        video.style.width = "100%";
-        video.style.height = "100%";
+
         videoWrapper.appendChild(video);
         title = document.createElement("h4");
         title.innerText = dataArray[0].name.split("|")[0].split("Trailer")[0];
       } else {
         // 비디오가 없을 경우  이미지 넣어주기
         videoWrapper = document.createElement("img");
+        videoWrapper.className = "videoWrapper";
         videoWrapper.src =
           "https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A4.PNG";
       }
@@ -408,7 +422,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
 
   return Object.keys(data).length !== 0 ? (
     <Container>
-      <HeaderImage>
+      <HeaderImage width={width}>
         {data["latestVideo"]?.length !== 0 ? (
           <div className="Image">
             <iframe

@@ -12,10 +12,13 @@ const Ul = styled.ul`
   color: white;
   width: 100%;
   height: 60px;
-  display: flex;
+  //display: ${(props) => (props.width >= 960 ? "flex" : "block")};
+  display: grid;
+  grid-template-columns: repeat(4, minmax(70px, 1fr));
+
+  justify-items: center;
   align-items: center;
-  justify-content: space-evenly;
-  font-size: 20px;
+  font-size: ${(props) => (props.width > 450 ? "20px" : "15px")};
   z-index: 10;
   position: fixed;
   top: 0;
@@ -28,15 +31,19 @@ const SLink = styled(Link)`
 const Navigator = ({ location }) => {
   const route = location.pathname;
   const [scroll, setScroll] = useState(window.scrollY);
+  const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     window.addEventListener("scroll", () => setScroll(window.scrollY));
-    return () =>
+    window.addEventListener("resize", () => setWidth(window.innerWidth));
+    return () => {
       window.removeEventListener("scroll", () => setScroll(window.scrollY));
+      window.removeEventListener("resize", () => setWidth(window.innerWidth));
+    };
   }, []);
 
   return (
-    <Ul scroll={scroll}>
+    <Ul scroll={scroll} width={width}>
       <SLink to="/" isroute={route === "/" ? 1 : 0}>
         Movie
       </SLink>
@@ -46,7 +53,7 @@ const Navigator = ({ location }) => {
       <SLink to="/mypage" isroute={route === "/mypage" ? 1 : 0}>
         MyPage
       </SLink>
-      <SearchForm></SearchForm>
+      <SearchForm width={width}></SearchForm>
     </Ul>
   );
 };

@@ -31,12 +31,15 @@ const Container = styled.div`
 
   section {
     box-shadow: -10px 5px 1px rgba(247, 241, 227, 1), inset 5px -5px 1px black;
-    transform-origin: 0% 50%;
+    transform-origin: ${(props) =>
+      props.width > 550 ? "0% 50%" : "center center"};
+
     border-radius: 20px;
     background-color: rgba(247, 241, 227, 1);
     border: 1px solid black;
-    margin-left: 50%;
+    margin-left: ${(props) => (props.width > 550 ? "50%" : "")};
     padding: 5px;
+    width: ${(props) => (props.width > 550 ? "47%" : "100%")};
     @keyframes bookNext {
       0% {
         transform: perspective(1800px) rotateY(0deg);
@@ -54,6 +57,23 @@ const Container = styled.div`
       }
     }
 
+    @keyframes phoneNext {
+      0% {
+        transform: translateX("");
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    @keyframes phonePrev {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(0%);
+      }
+    }
     // transform: perspective(300px);
     // animation: bookNext 1s linear forwards;
   }
@@ -62,7 +82,7 @@ const Container = styled.div`
 const ItemRelated = styled.section`
   position: absolute;
   top: 0;
-  width: 47%;
+  //width: 47%;
   height: 95%;
   h1 {
     margin-top: 15px;
@@ -70,17 +90,75 @@ const ItemRelated = styled.section`
     font-size: 25px;
     font-weight: 600;
   }
+  .backPage {
+    padding: 10px;
+    h1 {
+      margin-bottom: 30px;
+    }
+    .companyWrapper {
+      color: white;
+      overflow: auto;
+      height: 75vh;
+      display: grid;
+      justify-items: center;
+      align-items: center;
+      grid-auto-rows: 35vh;
+      gap: 10px;
+      .company {
+        background-color: rgba(64, 115, 158, 1);
+        padding: 30px;
+
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: 5fr 1fr 1fr;
+        justify-items: center;
+        align-items: center;
+        img {
+          max-width: 200px;
+          max-height: 200px;
+          width: auto;
+          height: auto;
+        }
+      }
+    }
+  }
 `;
-const ItemMessage = styled.section`
+const ItemCountry = styled.section`
   position: absolute;
   top: 0;
-  width: 47%;
   height: 95%;
+  padding: 10px;
+  h1 {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+  .countries {
+    padding: 10px;
+    display: grid;
+    grid-auto-rows: 35vh;
+    height: 73vh;
+    overflow: auto;
+    .country {
+      font-size: 25px;
+
+      span {
+        margin-left: 10px;
+        padding: 5px;
+        border-radius: 50%;
+        background-color: rgba(64, 115, 158, 1);
+        color: white;
+      }
+    }
+  }
 `;
 const ItemActor = styled.section`
   position: absolute;
   top: 0;
-  width: 47%;
+  //width: 47%;
   height: 95%;
   .backPage {
     h1 {
@@ -151,16 +229,10 @@ const ItemActor = styled.section`
   }
 `;
 
-const ItemVideo = styled.section`
-  position: absolute;
-  top: 0;
-  width: 47%;
-  height: 95%;
-`;
 const ItemInfo = styled.section`
   position: absolute;
   top: 0;
-  width: 47%;
+  //width: 47%;
   height: 95%;
   .info {
     width: 100%;
@@ -192,24 +264,25 @@ const ItemInfo = styled.section`
   }
 `;
 const ItemProfile = styled.section`
-  // profile -> Info ->Video ->Actor->Message-> Related (사진(연두),노랑,초록,빨강,검정,파랑) 543210
   position: absolute;
+  background-image: ${(props) => `url(${props.src})`};
+  //background-size: contain;
+  background-position: center center;
 
   top: 0;
   display: flex;
-  width: 47%;
+  // width: 47%;
   height: 95%;
   justify-content: center;
   align-items: center;
   .profile {
+    background-color: rgba(15, 15, 15, 0.5);
+    color: white;
     h1 {
       font-size: 25px;
       font-weight: 600;
       text-align: center;
       margin-bottom: 10px;
-    }
-    img {
-      border-radius: 20px;
     }
   }
   .backPage {
@@ -217,6 +290,9 @@ const ItemProfile = styled.section`
     width: 100%;
     height: 100%;
     text-align: center;
+    background-color: rgba(15, 15, 15, 0.5);
+    color: white;
+
     .semiInfo {
       height: 100%;
       display: grid;
@@ -251,6 +327,7 @@ const BackPage = styled.div`
 `;
 const VideoWrapper = styled.div`
   //display: flex;
+
   margin-top: 30px;
   //transform: translateY(-50%);
   overflow: auto;
@@ -305,20 +382,23 @@ const ActorWrapper = styled.div`
     margin-bottom: 15px;
   }
   .actorWrapper {
+    padding: 10px;
     height: 70vh;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-
+    grid-template-columns: ${(props) =>
+      props.width > 800 ? "repeat(2, 1fr)" : ""};
+    /* grid-template-rows:${(props) => (props.width > 550 ? "" : "")} */
     gap: 5px;
     padding: 20px;
     //justify-items: center;
     overflow: auto;
     .actorProfile {
       display: flex;
-
+      flex-direction: ${(props) => (props.width > 500 ? "" : "column")};
       img {
         height: 100px;
         width: 80px;
+        margin-bottom: 5px;
       }
       div.actorInfo {
         margin-left: 10px;
@@ -470,28 +550,42 @@ const Detail = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirect] = useState(""); // 무슨버튼 눌렀는지 알려준다. // 제일 끝과 처음을 인지해야한다.
   const [change, setChange] = useState(true);
-  const [content, setContent] = useState([]); // 각장당  앞뒤 내용을 가지고 있어야 한다. 그리고 페이지가 바뀔 때마다 내용을 다시 그려준다.
+  const [width, setWidth] = useState(window.innerWidth);
   const book = useRef();
 
   const arrowBtnClick = (e) => {
     const {
       currentTarget: { id },
     } = e;
+
     if (id === "left") {
       setChange(index ? true : false);
       setIndex((prev) => (index ? prev - 1 : 0));
       setDirect("left");
     } else {
-      setChange(index !== 5 ? true : false);
-      setIndex((prev) => (index !== 5 ? prev + 1 : 5));
+      if (width > 550) {
+        setChange(index !== 5 ? true : false);
+        setIndex((prev) => (index !== 5 ? prev + 1 : 5));
+      } else {
+        // 화면이  550 이하일 경우
+        setChange(index !== 9 ? true : false);
+        setIndex((prev) => (index !== 9 ? prev + 1 : 9));
+      }
       setDirect("right");
     }
   };
 
   useEffect(() => {
+    window.addEventListener("resize", () => setWidth(window.innerWidth));
+    return () =>
+      window.removeEventListener("resize", () => setWidth(window.innerWidth));
+  }, []);
+
+  useEffect(() => {
     // index가 바뀌면  그 index의 화면이 앞에나와야 한다.  넘어간 페이지에 zIndex를 조정해줘야한다.
 
-    if (cards) {
+    if (cards && width > 550) {
+      // 화면이 550px 이상일때는
       if (direction === "left" && change) {
         cards[5 - index].style.animation = "bookPrev 1s linear forwards";
         setTimeout(() => {
@@ -512,9 +606,35 @@ const Detail = () => {
           "rotateY(180deg)";
 
         cards[5 - (index - 1)].childNodes[1].style.display = "block";
-      }
 
-      // BackPage의 내용을 바꿔줘야 한다.
+        // BackPage의 내용을 바꿔줘야 한다.
+      }
+    } else if (cards && width <= 550) {
+      const Page = Math.ceil(index / 2);
+      // 화면이 모바일일경우
+      console.log(index, Page);
+      if (direction === "left" && change) {
+        if (index % 2 === 0) {
+          cards[5 - Page].style.animation = "bookPrev 1s linear forwards";
+          cards[5 - Page].childNodes[1].style.display = "none";
+          cards[5 - Page].childNodes[0].style.display = "block";
+        } else {
+          cards[5 - (Page - 1)].style.animation =
+            "phonePrev 1s linear forwards";
+        }
+      } else if (direction === "right" && change) {
+        if (index % 2 !== 1) {
+          cards[5 - (Page - 1)].childNodes[1].style.transform = "unset";
+          cards[5 - (Page - 1)].style.animation =
+            "phoneNext 1s linear forwards";
+        } else {
+          cards[5 - (Page - 1)].style.animation = "bookNext 1s linear forwards";
+          cards[5 - (Page - 1)].childNodes[0].style.display = "none";
+          cards[5 - (Page - 1)].childNodes[1].style.display = "block";
+          cards[5 - (Page - 1)].childNodes[1].style.transform =
+            "rotateY(180deg)";
+        }
+      }
     }
   }, [index]);
 
@@ -533,6 +653,11 @@ const Detail = () => {
     const type = where.split("/")[1];
     const data =
       type === "movie" ? await moviesApi.detail(id) : await dramaApi.detail(id);
+
+    const collections =
+      type === "movie" && data.data.belongs_to_collection
+        ? await moviesApi.collection(data.data.belongs_to_collection.id)
+        : {};
 
     const actors =
       type === "movie"
@@ -555,6 +680,7 @@ const Detail = () => {
       actors: actors.data,
       reviews: reviews.data,
       similar: similar.data,
+      collections: collections.data,
     });
   }, []);
   console.log(data);
@@ -562,13 +688,40 @@ const Detail = () => {
   return data ? (
     <>
       <ShadowBox background={data["results"].backdrop_path}></ShadowBox>
-      <Container ref={book}>
+      <Container ref={book} width={width}>
         <ItemRelated>
           <BackPage className="backPage"></BackPage>
         </ItemRelated>
-        <ItemMessage>
-          <BackPage className="backPage"></BackPage>
-        </ItemMessage>
+        <ItemCountry>
+          <div>
+            <h1>Production Countries</h1>
+            <div className="countries">
+              {data["results"].production_countries.length
+                ? data["results"].production_countries.map((item) => (
+                    <div className="country">
+                      {item.name}
+                      <span>{item.iso_3166_1}</span>
+                    </div>
+                  ))
+                : ""}
+            </div>
+          </div>
+          <BackPage className="backPage">
+            <h1>Series</h1>
+            <div className="series">
+              {data["collections"].parts.length
+                ? data["collections"].parts.map((item) => (
+                    <div className="series-item">
+                      <img
+                        src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                      />
+                    </div>
+                  ))
+                : ""}
+            </div>
+          </BackPage>
+        </ItemCountry>
+
         <ItemRelated>
           <RelatedWrapper>
             <h1>Related</h1>
@@ -605,10 +758,31 @@ const Detail = () => {
               </div>
             )}
           </RelatedWrapper>
-          <BackPage className="backPage"></BackPage>
+          <BackPage className="backPage">
+            <h1>Production Company</h1>
+            <div className="companyWrapper">
+              {data.results.production_companies.length
+                ? data.results.production_companies.map((item) =>
+                    item.logo_path ? (
+                      <div className="company">
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.logo_path}`}
+                        />
+                        <div>{item.name}</div>
+                        <div>{item.origin_country}</div>
+                      </div>
+                    ) : (
+                      ""
+                    )
+                  )
+                : ""}
+            </div>
+          </BackPage>
         </ItemRelated>
-        <ItemActor>
-          <ActorWrapper>
+        <ItemActor
+          src={`https://image.tmdb.org/t/p/w300${data["results"].poster_path}`}
+        >
+          <ActorWrapper width={width}>
             <h1>Actors</h1>
             {data["actors"].cast.length ? (
               <div className="actorWrapper">
@@ -660,7 +834,9 @@ const Detail = () => {
             </div>
           </BackPage>
         </ItemActor>
-        <ItemInfo>
+        <ItemInfo
+          src={`https://image.tmdb.org/t/p/w300${data["results"].poster_path}`}
+        >
           <div className="info">
             <h1>OverView</h1>
             <p>{data["results"].overview}</p>
@@ -688,25 +864,27 @@ const Detail = () => {
             </VideoWrapper>
           </BackPage>
         </ItemInfo>
-        <ItemProfile>
+        <ItemProfile
+          src={`https://image.tmdb.org/t/p/w300${data["results"].poster_path}`}
+        >
           <div className="profile">
             <h1>
               {data.type === "movie"
                 ? data["results"].original_title
                 : data["results"].original_name}
             </h1>
-            <img
+            {/* <img
               src={`https://image.tmdb.org/t/p/w300${data["results"].poster_path}`}
-            />
+            /> */}
           </div>
           <BackPage className="backPage">
             <div className="semiInfo">
               <span>
                 <h5>
-                  {data["results"].release_data ? "Release" : "First_Air_Date"}
+                  {data["results"].release_date ? "Release" : "First_Air_Date"}
                 </h5>
                 {data["results"].release_date
-                  ? data["results"].release_data
+                  ? data["results"].release_date
                   : data["results"].first_air_date}
               </span>
               <span>

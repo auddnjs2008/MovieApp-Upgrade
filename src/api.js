@@ -32,6 +32,7 @@ export const moviesApi = {
   peoples: (id) => api.get(`movie/${id}/credits`),
   reviews: (id) => api.get(`movie/${id}/reviews`),
   similar: (id) => api.get(`movie/${id}/similar`),
+  collection: (id) => api.get(`collection/${id}`),
 };
 
 //drama -Latest, popular, on_the_air

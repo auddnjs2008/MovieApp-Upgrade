@@ -5,13 +5,16 @@ import { connect, useSelector } from "react-redux";
 import { searchActionCreator } from "../store/modules/Search";
 
 const Container = styled.form`
-  position: absolute;
-  right: 5px;
-  top: 10px;
+  //position: absolute;
+  //right: 5px;
+  //top: 10px;
+
+  width: ${(props) => (props.width < 450 ? "80px" : "")};
   input {
     outline: none;
     border: none;
     padding: 5px;
+    width: inherit;
     background-color: #2c3e50;
     color: white;
     &::placeholder {
@@ -20,7 +23,7 @@ const Container = styled.form`
   }
 `;
 
-const SearchForm = ({ search, doSearch, notSearch }) => {
+const SearchForm = ({ search, doSearch, notSearch, width }) => {
   const onSubmit = (e) => {
     e.preventDefault();
     // 검색 기능
@@ -36,12 +39,13 @@ const SearchForm = ({ search, doSearch, notSearch }) => {
   };
 
   return (
-    <Container onSubmit={onSubmit}>
+    <Container onSubmit={onSubmit} width={width}>
       <input
         type="text"
         placeholder="Search"
         value={search.text}
         onChange={onChange}
+        width={width}
         className="searchInput"
       ></input>
     </Container>

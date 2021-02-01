@@ -283,8 +283,6 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
       });
       Pop(numberId); //  state의 상태를 업그레이드 시켜준다.
     }
-
-    // 공유 기능을 넣어줘야 한다  => 나중에 구현
   };
 
   const onDragStart = (e) => {
@@ -309,7 +307,6 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
   const onDragOver = (e) => {
     e.preventDefault();
     e.currentTarget.style.backgroundColor = "yellow";
-    console.log("박스안입니다.");
   };
 
   const onDragLeave = (e) => {
@@ -318,19 +315,78 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
 
   const onDrag = (e) => {
     const newTicket = document.querySelector(".newTicket");
-    const dropBox = document.querySelector(".dropBox");
 
     newTicket.style.opacity = "1";
     newTicket.style.position = "absolute";
-    newTicket.style.left = `${e.clientX}px`;
-    newTicket.style.top = `${window.scrollY + e.clientY}px`;
+
+    newTicket.style.left =
+      e._reactName === "onDrag"
+        ? `${e.clientX}px`
+        : `${e.touches[0].clientX}px`;
+    newTicket.style.top =
+      e._reactName === "onDrag"
+        ? `${window.scrollY + e.clientY}px`
+        : `${window.scrollY + e.touches[0].clientY}px`;
+    if (e._reactName === "onTouchMove") {
+      onTouchOver(e.touches[0].clientX, e.touches[0].clientY);
+      window.document.body.style.overflow = "hidden";
+    }
   };
 
-  const onDragend = (e) => {
+  const onTouchOver = (x, y) => {
+    const trashBox = document.querySelector(".trash");
+    const dropBox = document.querySelector(".dropBox");
+
+    if (x <= trashBox.clientWidth && x >= 0)
+      trashBox.style.backgroundColor = "yellow";
+    else trashBox.style.backgroundColor = "rgba(20,20,20,0.5)";
+    if (y <= dropBox.clientHeight && y >= 0)
+      dropBox.style.backgroundColor = "yellow";
+    else dropBox.style.backgroundColor = "rgba(20,20,20,0.5)";
+  };
+
+  const onDragend = async (e) => {
     const container = document.querySelector(".container");
     const newTicket = document.querySelector(".newTicket");
     const dropBox = document.querySelector(".dropBox");
     const trashBox = document.querySelector(".trash");
+
+    if (e._reactName === "onTouchEnd") {
+      window.document.body.style.overflow = "auto";
+      // 만일  드롭존 구역에 있으면 기능 수행을 해줘야 한다.
+      console.log(
+        newTicket.getBoundingClientRect().left,
+        newTicket.getBoundingClientRect().top,
+        newTicket.getBoundingClientRect().width
+      );
+      const x =
+        newTicket.getBoundingClientRect().left +
+        newTicket.getBoundingClientRect().width / 2;
+      const y = newTicket.getBoundingClientRect().top + 100;
+
+      const rowId = document.querySelector(".newTicket").id;
+      const numberId = parseInt(rowId.split("-")[0]);
+      const type = rowId.split("-")[1];
+
+      if (x <= trashBox.clientWidth && x >= 0) {
+        //삭제기능
+        const object = await storeService
+          .collection(`mwFlix-${uid}`)
+          .get(queryAllByAttribute);
+        object.forEach((item) => {
+          if (item.data().id === numberId) item.ref.delete();
+        });
+        Pop(numberId); //  state의 상태를 업그레이드 시켜준다.
+      } else if (y <= dropBox.clientHeight && y >= 0) {
+        //공유기능
+        const [data] =
+          type === "movie"
+            ? movie.filter((item) => item.id === numberId)
+            : drama.filter((item) => item.id === numberId);
+        console.log(data);
+        sendKakaoMessage(data);
+      }
+    }
 
     dropBox.style.zIndex = "0";
     dropBox.style.display = "none";
@@ -396,6 +452,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
         className="trash"
         droppable="true"
         onDragOver={onDragOver}
+        onTouchMove={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
@@ -411,8 +468,11 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
                 <Poster
                   draggable="true"
                   onDragStart={onDragStart}
+                  onTouchStart={onDragStart}
                   onDragEnd={onDragend}
+                  onTouchEnd={onDragend}
                   onDrag={onDrag}
+                  onTouchMove={onDrag}
                   id={`${item.id}-movie`}
                 >
                   <Link to={`/${item.id}/movie`}>
@@ -446,8 +506,11 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
               <Poster
                 draggable="true"
                 onDragStart={onDragStart}
+                onTouchStart={onDragStart}
                 onDragEnd={onDragend}
+                onTouchEnd={onDragend}
                 onDrag={onDrag}
+                onTouchMove={onDrag}
                 id={`${item.id}-tv`}
               >
                 <Link to={`/${item.id}/movie`}>
