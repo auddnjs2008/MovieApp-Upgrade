@@ -513,7 +513,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
                 onTouchMove={onDrag}
                 id={`${item.id}-tv`}
               >
-                <Link to={`/${item.id}/movie`}>
+                <Link to={`/${item.id}/tv`}>
                   <img
                     src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                     draggable="false"

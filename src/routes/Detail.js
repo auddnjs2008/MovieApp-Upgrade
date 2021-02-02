@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import SearchPage from "../component/SearchPage";
+import SeasonBox from "../component/SeasonBox";
 
 const ShadowBox = styled.div`
   width: 100vw;
@@ -79,6 +80,25 @@ const Container = styled.div`
   }
 `;
 
+const ItemEnd = styled.section`
+  position: absolute;
+  top: 0;
+  height: 95%;
+
+  background-image: ${(props) => `url(${props.src})`};
+  background-size: contain;
+  background-position: center center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  h1 {
+    font-size: 50px;
+    font-weight: 600;
+    color: white;
+    text-shadow: 5px 2px 2px black;
+  }
+`;
+
 const ItemRelated = styled.section`
   position: absolute;
   top: 0;
@@ -98,7 +118,7 @@ const ItemRelated = styled.section`
     .companyWrapper {
       color: white;
       overflow: auto;
-      height: 75vh;
+      height: 70vh;
       display: grid;
       justify-items: center;
       align-items: center;
@@ -111,12 +131,12 @@ const ItemRelated = styled.section`
         width: 100%;
         height: 100%;
         display: grid;
-        grid-template-rows: 5fr 1fr 1fr;
+        grid-template-rows: 4fr 1fr 1fr;
         justify-items: center;
         align-items: center;
         img {
-          max-width: 200px;
-          max-height: 200px;
+          max-width: 130px;
+          max-height: 130px;
           width: auto;
           height: auto;
         }
@@ -140,19 +160,82 @@ const ItemCountry = styled.section`
     padding: 10px;
     display: grid;
     grid-auto-rows: 35vh;
-    height: 73vh;
+    height: 70vh;
     overflow: auto;
     .country {
       font-size: 25px;
-
+      line-height: 1.1;
       span {
+        font-size: 19px;
         margin-left: 10px;
         padding: 5px;
         border-radius: 50%;
         background-color: rgba(64, 115, 158, 1);
         color: white;
+        margin-top: 10px;
       }
     }
+  }
+  .backPage {
+    .series {
+      height: 65vh;
+      overflow: auto;
+      overflow-x: hidden;
+      padding: 10px;
+    }
+    .season {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: center;
+      font-size: 20px;
+      &:hover {
+        background-color: rgba(15, 15, 15, 0.8);
+        color: white;
+        transform: scale(1.05, 1.05);
+      }
+      transition: all 0.5s linear;
+      img {
+        max-width: 200px;
+        max-height: 200px;
+        width: auto;
+        height: auto;
+        margin-right: 20px;
+      }
+    }
+  }
+`;
+
+const SeriesWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  &::after {
+    width: 100%;
+    height: 100%;
+    background-image: ${(props) => `url(${props.src})`};
+    background-size: cover;
+    background-position: center center;
+    border-radius: 15px;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.8;
+    z-index: -1;
+  }
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  &:hover {
+    transform: scale(1.01, 1.01);
+  }
+  transition: transform 0.5s linear;
+  img {
+    width: 100px;
+    height: 130px;
   }
 `;
 const ItemActor = styled.section`
@@ -171,7 +254,7 @@ const ItemActor = styled.section`
       margin-top: 30px;
       padding: 20px;
       overflow: auto;
-      height: 400px;
+      height: 70vh;
       div.review {
         margin-bottom: 20px;
         div {
@@ -278,11 +361,16 @@ const ItemProfile = styled.section`
   .profile {
     background-color: rgba(15, 15, 15, 0.5);
     color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     h1 {
       font-size: 25px;
       font-weight: 600;
       text-align: center;
       margin-bottom: 10px;
+      text-shadow: 5px 2px 2px black;
     }
   }
   .backPage {
@@ -461,7 +549,7 @@ const RelatedWrapper = styled.div`
     grid-auto-rows: 1fr;
     row-gap: 10px;
     padding: 10px;
-    height: 400px;
+    height: 70vh;
     overflow: auto;
 
     div.itemWrapper {
@@ -551,7 +639,15 @@ const Detail = () => {
   const [direction, setDirect] = useState(""); // 무슨버튼 눌렀는지 알려준다. // 제일 끝과 처음을 인지해야한다.
   const [change, setChange] = useState(true);
   const [width, setWidth] = useState(window.innerWidth);
+  const [season, setSeason] = useState("");
   const book = useRef();
+
+  const onClick = (e) => {
+    const {
+      currentTarget: { id: seasonId },
+    } = e;
+    setSeason(seasonId);
+  };
 
   const arrowBtnClick = (e) => {
     const {
@@ -564,12 +660,12 @@ const Detail = () => {
       setDirect("left");
     } else {
       if (width > 550) {
-        setChange(index !== 5 ? true : false);
-        setIndex((prev) => (index !== 5 ? prev + 1 : 5));
+        setChange(index !== 6 ? true : false);
+        setIndex((prev) => (index !== 6 ? prev + 1 : 6));
       } else {
         // 화면이  550 이하일 경우
-        setChange(index !== 9 ? true : false);
-        setIndex((prev) => (index !== 9 ? prev + 1 : 9));
+        setChange(index !== 11 ? true : false);
+        setIndex((prev) => (index !== 11 ? prev + 1 : 11));
       }
       setDirect("right");
     }
@@ -612,7 +708,7 @@ const Detail = () => {
     } else if (cards && width <= 550) {
       const Page = Math.ceil(index / 2);
       // 화면이 모바일일경우
-      console.log(index, Page);
+
       if (direction === "left" && change) {
         if (index % 2 === 0) {
           cards[5 - Page].style.animation = "bookPrev 1s linear forwards";
@@ -680,7 +776,7 @@ const Detail = () => {
       actors: actors.data,
       reviews: reviews.data,
       similar: similar.data,
-      collections: collections.data,
+      collections: collections !== undefined ? collections.data : undefined,
     });
   }, []);
   console.log(data);
@@ -689,9 +785,14 @@ const Detail = () => {
     <>
       <ShadowBox background={data["results"].backdrop_path}></ShadowBox>
       <Container ref={book} width={width}>
-        <ItemRelated>
-          <BackPage className="backPage"></BackPage>
-        </ItemRelated>
+        <ItemEnd
+          src={`https://image.tmdb.org/t/p/w300${data["results"].poster_path}`}
+        >
+          <h1>Thank you</h1>
+          <BackPage className="backPage">
+            <h1>The End</h1>
+          </BackPage>
+        </ItemEnd>
         <ItemCountry>
           <div>
             <h1>Production Countries</h1>
@@ -709,12 +810,34 @@ const Detail = () => {
           <BackPage className="backPage">
             <h1>Series</h1>
             <div className="series">
-              {data["collections"].parts.length
+              {data["collections"] && data["collections"].parts.length
                 ? data["collections"].parts.map((item) => (
-                    <div className="series-item">
+                    <Link
+                      to={`/${item.id}/movie`}
+                      onClick={() => window.location.reload()}
+                    >
+                      <SeriesWrapper
+                        className="series-item"
+                        src={`https://image.tmdb.org/t/p/w300${item.backdrop_path}`}
+                      >
+                        <img
+                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                        />
+                        <div>{item.original_title}</div>
+                      </SeriesWrapper>
+                    </Link>
+                  ))
+                : data["results"].seasons
+                ? data["results"].seasons.map((item) => (
+                    <div
+                      className="season"
+                      id={item.season_number}
+                      onClick={onClick}
+                    >
                       <img
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                      />
+                      ></img>
+                      <div>{item.name}</div>
                     </div>
                   ))
                 : ""}
@@ -921,6 +1044,12 @@ const Detail = () => {
           onClick={arrowBtnClick}
         ></FontAwesomeIcon>
       </ArrowRapper>
+      <SeasonBox
+        width={width}
+        season={season}
+        setSeason={setSeason}
+        id={data.id}
+      ></SeasonBox>
     </>
   ) : (
     ""

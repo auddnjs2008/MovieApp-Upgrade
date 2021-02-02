@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import SearchPage from "../component/SearchPage";
 
 const Container = styled.div`
-  /* margin-top: 60px; */
-  height: 100%;
+  margin-top: 50px;
+  height: 80%;
   background-color: #353b48;
   padding: 10px;
   display: flex;

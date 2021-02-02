@@ -59,6 +59,7 @@ export const dramaApi = {
   peoples: (id) => api.get(`tv/${id}/credits`),
   reviews: (id) => api.get(`tv/${id}/reviews`),
   similar: (id) => api.get(`tv/${id}/similar`),
+  seasons: (id, season) => api.get(`tv/${id}/season/${season}`),
 };
 
 export const actorApi = (id) => api.get(`/credit/${id}`);
