@@ -1,5 +1,6 @@
 import APPRouter from "./Router";
 import GlobalStyle from "./GlobalStyle";
+import PropTypes from "prop-types";
 import Navigator from "./Navigator";
 import { useEffect, useState } from "react";
 import { authService } from "../fbase";
@@ -35,3 +36,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 };
 
 export default connect(null, mapDispatchToProps)(App);
+
+App.propTypes = {
+  logIn: PropTypes.func,
+  logOut: PropTypes.func,
+};

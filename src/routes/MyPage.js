@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { authService, storeService } from "../fbase";
@@ -50,9 +50,9 @@ const Container = styled.div`
       padding: 10px;
       font-weight: 600;
       width: 90%;
-      height: 100px;
-      background-color: rgba(52, 73, 94, 1);
-      border-radius: 20px;
+      height: 50px;
+      background-color: rgba(15, 15, 15, 0.5);
+      border-radius: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -75,6 +75,8 @@ const Wrapper = styled.section`
   h1 {
     font-size: 30px;
     padding: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
   }
   #left {
     position: absolute;
@@ -99,6 +101,7 @@ const Wrapper = styled.section`
 
 const MovieWrapper = styled.div`
   display: flex;
+  width: 100%;
   height: 70vh;
   overflow: auto;
   scroll-behavior: smooth;
@@ -118,15 +121,21 @@ const DramaWrapper = styled.div`
   }
 `;
 const Poster = styled.div`
-  height: 100%;
+  // height: 100%;
   margin-right: 10px;
+  width: 200px;
   display: grid;
   grid-template-rows: 1fr 1fr;
+  justify-items: center;
+  padding: 5px;
   gap: 30px;
+
+  background-color: rgba(232, 65, 24, 1);
+
   img {
-    width: 200px;
-    height: 100%;
-    object-fit: contain;
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
   }
 `;
 
@@ -169,6 +178,17 @@ const TrashIcon = styled.div`
   color: white;
   position: absolute;
   top: ${(props) => `${props.scrollHeight + 100}px`};
+`;
+
+const AlarmBox = styled.div`
+  border: 1px solid white;
+  position: absolute;
+  top: 105px;
+  left: 50%;
+  width: 50vw;
+  padding: 10px;
+  text-align: center;
+  transform: translate(-50%, -50%);
 `;
 
 const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
@@ -395,17 +415,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
     container.removeChild(newTicket);
   };
 
-  useEffect(() => {
-    window.addEventListener("scroll", () => setScroll(window.scrollY));
-    return () =>
-      window.removeEventListener("scroll", () => setScroll(window.scrollY));
-  }, []);
-
-  useEffect(() => {
-    if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
-  }, []);
-
-  useEffect(async () => {
+  const getData = async () => {
     let testDrama = [];
     let testMovie = [];
 
@@ -427,6 +437,20 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
 
     setMovie(testMovie);
     setDrama(testDrama);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", () => setScroll(window.scrollY));
+    return () =>
+      window.removeEventListener("scroll", () => setScroll(window.scrollY));
+  }, []);
+
+  useEffect(() => {
+    if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
+  }, []);
+
+  useEffect(() => {
+    getData();
   }, [MyList]);
 
   const logoutClick = async () => {
@@ -466,7 +490,6 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
             <MovieWrapper>
               {movie.map((item) => (
                 <Poster
-                  draggable="true"
                   onDragStart={onDragStart}
                   onTouchStart={onDragStart}
                   onDragEnd={onDragend}
@@ -504,7 +527,6 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
           <DramaWrapper>
             {drama.map((item) => (
               <Poster
-                draggable="true"
                 onDragStart={onDragStart}
                 onTouchStart={onDragStart}
                 onDragEnd={onDragend}
@@ -535,6 +557,12 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
           ></FontAwesomeIcon>
         </Wrapper>
         <SearchPage></SearchPage>
+        <AlarmBox>
+          <p>
+            영화를 공유하고 싶거나 삭제하고 싶으시면 영화표를 잡고 드래그를
+            해주세요
+          </p>
+        </AlarmBox>
       </Container>
     </>
   );
@@ -553,3 +581,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyPage);
+
+MyPage.propTypes = {
+  logOut: PropTypes.func,
+  bunchPush: PropTypes.func,
+  MyList: PropTypes.array,
+  uid: PropTypes.string,
+  Pop: PropTypes.func,
+};

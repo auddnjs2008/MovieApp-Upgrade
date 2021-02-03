@@ -14,6 +14,7 @@ import { queryAllByAttribute } from "@testing-library/react";
 import { connect } from "react-redux";
 import { myListActionCreator } from "../store/modules/MyList";
 import { errorACtionCreator } from "../store/modules/Error";
+import PosterSlider from "../component/PosterSlider";
 
 const Container = styled.div`
   width: 100%;
@@ -167,6 +168,9 @@ const DramasWrapper = styled.div`
 const DramaWrapper = styled.div`
   position: relative;
   margin-right: 25px;
+  button {
+    width: 50px;
+  }
 `;
 const SLink = styled(Link)``;
 const IconWrapper = styled.div`
@@ -182,7 +186,7 @@ const IconWrapper = styled.div`
     align-items: center;
     background-color: rgba(15, 15, 15, 0.7);
     color: white;
-    opacity: 0;
+    opacity: ${(props) => (props.isMobile ? "1" : "0")};
   }
   &#right {
     right: 0;
@@ -192,15 +196,21 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
   const [data, setData] = useState({});
   const [width, setWidth] = useState(window.innerWidth);
   const [testTimer, setTimer] = useState(null);
+  const [isMobile, setMobile] = useState(
+    /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent)
+  );
 
   const handleShareBtn = async (e) => {
+    if (isMobile) e.stopPropagation();
+
     const {
       currentTarget: {
         parentNode: {
-          parentNode: { id },
+          parentNode: { id: notebookId },
         },
       },
     } = e;
+    const id = isMobile ? e.currentTarget.id : notebookId;
 
     // 이미 저장되있는지 판별해야 한다.
     let save = 1;
@@ -212,9 +222,9 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
       parseInt(item.data().id) === parseInt(id) ? (save = 0) : (save = 1)
     ); // 아이다가 같으면 save해주지 않는다.
     if (save) {
-      const data = { id: parseInt(id), creator: uid, type: "drama" };
+      const data = { id: parseInt(id), creator: uid, type: "tv" };
       await storeService.collection(`mwFlix-${uid}`).add(data);
-      listPush(parseInt(id), "drama");
+      listPush(parseInt(id), "tv");
     } else {
       errorText("이미 저장되어있는 드라마입니다.");
     }
@@ -269,7 +279,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
 
   const createBox = async (where, id) => {
     const containerBox = document.querySelector(".content");
-    let imageDatas;
+
     if (containerBox) {
       if (document.querySelector(".hoverBox"))
         containerBox.removeChild(document.querySelector(".hoverBox"));
@@ -389,18 +399,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
     bunchPush(testArray);
   };
 
-  useEffect(() => {
-    if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("resize", () => setWidth(window.innerWidth));
-
-    return () =>
-      window.removeEventListener("resize", () => setWidth(window.innerWidth));
-  }, []);
-
-  useEffect(async () => {
+  const getData = async () => {
     const {
       data: { results: popular },
     } = await dramaApi.popular();
@@ -418,6 +417,21 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
       .results;
     const latest = onAir[Random];
     setData({ popular, onAir, topRated, latest, latestVideo });
+  };
+
+  useEffect(() => {
+    if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("resize", () => setWidth(window.innerWidth));
+
+    return () =>
+      window.removeEventListener("resize", () => setWidth(window.innerWidth));
+  }, []);
+
+  useEffect(() => {
+    getData();
   }, []);
 
   return Object.keys(data).length !== 0 ? (
@@ -427,9 +441,9 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
           <div className="Image">
             <iframe
               src={`https://www.youtube.com/embed/${data["latestVideo"][0].key}?vq=hd720&autoplay=1&mute=1&amp;loop=1;playlist=${data["latestVideo"][0].key}`}
-              frameborder="0"
+              frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+              allowFullScreen
             ></iframe>
           </div>
         ) : (
@@ -457,68 +471,11 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
       <ContentWrapper className="content">
         <SectionWrapper>
           <h1>Popular Drama</h1>
-          <DramasWrapper>
-            {data != {}
-              ? data["popular"].map((item, index) =>
-                  index > 9 ? (
-                    <DramaWrapper
-                      id={item.id}
-                      onMouseEnter={bringVideo}
-                      onMouseLeave={setClearTime}
-                    >
-                      <SLink to={`/${item.id}/tv`}>
-                        <img
-                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                        />
-                      </SLink>
-                    </DramaWrapper>
-                  ) : (
-                    ""
-                  )
-                )
-              : ""}
-
-            {data != {}
-              ? data["popular"].map((item) => (
-                  <DramaWrapper
-                    id={item.id}
-                    onMouseEnter={bringVideo}
-                    onMouseLeave={setClearTime}
-                  >
-                    <SLink to={`/${item.id}/tv`}>
-                      <img
-                        src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                      />
-                    </SLink>
-                  </DramaWrapper>
-                ))
-              : ""}
-            {data != {}
-              ? data["popular"].map((item, index) =>
-                  index < 10 ? (
-                    <DramaWrapper
-                      id={item.id}
-                      onMouseEnter={bringVideo}
-                      onMouseLeave={setClearTime}
-                    >
-                      <SLink to={`/${item.id}/tv`}>
-                        <img
-                          src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                        />
-                      </SLink>
-                    </DramaWrapper>
-                  ) : (
-                    ""
-                  )
-                )
-              : ""}
-          </DramasWrapper>
-          <IconWrapper id="left" onClick={handleSlider}>
-            <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
-          </IconWrapper>
-          <IconWrapper id="right" onClick={handleSlider}>
-            <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
-          </IconWrapper>
+          <PosterSlider
+            data={data["popular"]}
+            isMobile={isMobile}
+            type="tv"
+          ></PosterSlider>
         </SectionWrapper>
 
         <SectionWrapper>
@@ -529,7 +486,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                   index > 9 ? (
                     <DramaWrapper
                       id={item.id}
-                      onMouseEnter={bringVideo}
+                      onMouseEnter={isMobile ? "" : bringVideo}
                       onMouseLeave={setClearTime}
                     >
                       <SLink to={`/${item.id}/tv`}>
@@ -537,6 +494,13 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
                       </SLink>
+                      {isMobile ? (
+                        <button id={item.id} onClick={handleShareBtn}>
+                          Store
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </DramaWrapper>
                   ) : (
                     ""
@@ -547,7 +511,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
               ? data["onAir"].map((item) => (
                   <DramaWrapper
                     id={item.id}
-                    onMouseEnter={bringVideo}
+                    onMouseEnter={isMobile ? "" : bringVideo}
                     onMouseLeave={setClearTime}
                   >
                     <SLink to={`/${item.id}/tv`}>
@@ -555,6 +519,13 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
                     </SLink>
+                    {isMobile ? (
+                      <button id={item.id} onClick={handleShareBtn}>
+                        Store
+                      </button>
+                    ) : (
+                      ""
+                    )}
                   </DramaWrapper>
                 ))
               : ""}
@@ -563,7 +534,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                   index < 10 ? (
                     <DramaWrapper
                       id={item.id}
-                      onMouseEnter={bringVideo}
+                      onMouseEnter={isMobile ? "" : bringVideo}
                       onMouseLeave={setClearTime}
                     >
                       <SLink to={`/${item.id}/tv`}>
@@ -571,6 +542,13 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
                       </SLink>
+                      {isMobile ? (
+                        <button id={item.id} onClick={handleShareBtn}>
+                          Store
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </DramaWrapper>
                   ) : (
                     ""
@@ -578,10 +556,10 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                 )
               : ""}
           </DramasWrapper>
-          <IconWrapper id="left" onClick={handleSlider}>
+          <IconWrapper id="left" isMobile={isMobile} onClick={handleSlider}>
             <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
           </IconWrapper>
-          <IconWrapper id="right" onClick={handleSlider}>
+          <IconWrapper id="right" isMobile={isMobile} onClick={handleSlider}>
             <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
           </IconWrapper>
         </SectionWrapper>
@@ -593,7 +571,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                   index > 9 ? (
                     <DramaWrapper
                       id={item.id}
-                      onMouseEnter={bringVideo}
+                      onMouseEnter={isMobile ? "" : bringVideo}
                       onMouseLeave={setClearTime}
                     >
                       <SLink to={`/${item.id}/tv`}>
@@ -601,6 +579,13 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
                       </SLink>
+                      {isMobile ? (
+                        <button id={item.id} onClick={handleShareBtn}>
+                          Store
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </DramaWrapper>
                   ) : (
                     ""
@@ -611,7 +596,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
               ? data["topRated"].map((item) => (
                   <DramaWrapper
                     id={item.id}
-                    onMouseEnter={bringVideo}
+                    onMouseEnter={isMobile ? "" : bringVideo}
                     onMouseLeave={setClearTime}
                   >
                     <SLink to={`/${item.id}/tv`}>
@@ -619,6 +604,13 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                         src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                       />
                     </SLink>
+                    {isMobile ? (
+                      <button id={item.id} onClick={handleShareBtn}>
+                        Store
+                      </button>
+                    ) : (
+                      ""
+                    )}
                   </DramaWrapper>
                 ))
               : ""}
@@ -627,7 +619,7 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                   index < 10 ? (
                     <DramaWrapper
                       id={item.id}
-                      onMouseEnter={bringVideo}
+                      onMouseEnter={isMobile ? "" : bringVideo}
                       onMouseLeave={setClearTime}
                     >
                       <SLink to={`/${item.id}/tv`}>
@@ -635,6 +627,13 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                           src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                         />
                       </SLink>
+                      {isMobile ? (
+                        <button id={item.id} onClick={handleShareBtn}>
+                          Store
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </DramaWrapper>
                   ) : (
                     ""
@@ -642,10 +641,10 @@ const Drama = ({ MyList, listPush, bunchPush, uid, errorText }) => {
                 )
               : ""}
           </DramasWrapper>
-          <IconWrapper id="left" onClick={handleSlider}>
+          <IconWrapper id="left" isMobile={isMobile} onClick={handleSlider}>
             <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
           </IconWrapper>
-          <IconWrapper id="right" onClick={handleSlider}>
+          <IconWrapper id="right" isMobile={isMobile} onClick={handleSlider}>
             <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
           </IconWrapper>
         </SectionWrapper>
@@ -671,3 +670,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Drama);
+
+Drama.propTypes = {
+  MyList: PropTypes.array,
+  listPush: PropTypes.func,
+  bunchPush: PropTypes.func,
+  uid: PropTypes.string,
+  errorText: PropTypes.func,
+};

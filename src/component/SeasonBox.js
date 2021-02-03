@@ -98,14 +98,17 @@ const SeasonBox = ({ width, season, setSeason, id }) => {
     setSeason(null);
   };
 
-  useEffect(async () => {
-    if (season !== null) {
+  const getData = async () => {
+    if (season !== "") {
       const newData = await dramaApi.seasons(id, season);
       setData(newData.data);
     }
+  };
+
+  useEffect(() => {
+    getData();
   }, [season]);
 
-  console.log(data);
   return data ? (
     <Container className="infowindow" width={width}>
       <ContentWrapper width={width}>
@@ -144,3 +147,10 @@ const SeasonBox = ({ width, season, setSeason, id }) => {
 };
 
 export default SeasonBox;
+
+SeasonBox.propTypes = {
+  width: PropTypes.number,
+  season: PropTypes.string,
+  setSeason: PropTypes.func,
+  id: PropTypes.string,
+};

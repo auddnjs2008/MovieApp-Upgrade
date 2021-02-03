@@ -23,7 +23,7 @@ const Container = styled.form`
   }
 `;
 
-const SearchForm = ({ search, doSearch, notSearch, width }) => {
+const SearchForm = ({ search, doSearch, width }) => {
   const onSubmit = (e) => {
     e.preventDefault();
     // 검색 기능
@@ -58,8 +58,13 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     doSearch: (text) => dispatch(searchActionCreator.search(text)),
-    notSearch: () => dispatch(searchActionCreator.noSearch()),
   };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchForm);
+
+SearchForm.propTypes = {
+  search: PropTypes.string,
+  doSearch: PropTypes.func,
+  width: PropTypes.number,
+};

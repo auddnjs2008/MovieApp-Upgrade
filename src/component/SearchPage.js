@@ -151,7 +151,22 @@ const SearchPage = ({ search, noSearch }) => {
     searchInput.value = "";
   };
 
+  const getData = async () => {
+    if (search !== "") {
+      const {
+        data: { results: searchDrama },
+      } = await dramaApi.search(search);
+      const {
+        data: { results: searchMovie },
+      } = await moviesApi.search(search);
+
+      setDrama(searchDrama);
+      setMovie(searchMovie);
+    }
+  };
+
   useEffect(() => {
+    getData();
     window.addEventListener("scroll", () =>
       setScroll(parseInt(window.scrollY))
     );
@@ -160,19 +175,6 @@ const SearchPage = ({ search, noSearch }) => {
         setScroll(parseInt(window.scrollY))
       );
   }, []);
-
-  useEffect(async () => {
-    const {
-      data: { results: searchDrama },
-    } = await dramaApi.search(search);
-    const {
-      data: { results: searchMovie },
-    } = await moviesApi.search(search);
-    console.log(searchDrama);
-    console.log(searchMovie);
-    setDrama(searchDrama);
-    setMovie(searchMovie);
-  }, [search]);
 
   return search !== "" ? (
     <Container scroll={scroll}>
@@ -269,3 +271,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return { noSearch: () => dispatch(searchActionCreator.noSearch()) };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(SearchPage);
+
+SearchPage.propTypes = {
+  search: PropTypes.string,
+  noSearch: PropTypes.func,
+};

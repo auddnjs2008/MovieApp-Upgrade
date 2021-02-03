@@ -19,6 +19,20 @@ const GlobalStyle = createGlobalStyle`
     *{
         box-sizing:border-box;
     }
+    button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        border: none;
+        outline: none;
+        color: white;
+        background-color: rgba(64, 115, 158, 1);
+        border-radius: 5px;
+        &:active {
+          transform: scale(0.99, 0.99);
+        }
+    }
 `;
 
 export default GlobalStyle;

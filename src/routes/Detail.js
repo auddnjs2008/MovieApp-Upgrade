@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import PropTypes from "prop-types";
+
 import { dramaApi, moviesApi } from "../api";
-import { useSelector } from "react-redux";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -616,7 +616,7 @@ const ArrowRapper = styled.span`
     color: rgb(231, 76, 60);
     font-size: 50px;
     position: absolute;
-    top: 50%;
+    top: ${(props) => (props.width > 800 ? "50%" : "80%")};
     left: 50px;
     transform: translateY(-50%);
     &:active {
@@ -671,7 +671,45 @@ const Detail = () => {
     }
   };
 
+  const getData = async () => {
+    const where = window.location.href.split("#/")[1];
+    const id = where.split("/")[0];
+    const type = where.split("/")[1];
+    const data =
+      type === "movie" ? await moviesApi.detail(id) : await dramaApi.detail(id);
+
+    const collections =
+      type === "movie" && data.data.belongs_to_collection
+        ? await moviesApi.collection(data.data.belongs_to_collection.id)
+        : undefined;
+
+    const actors =
+      type === "movie"
+        ? await moviesApi.peoples(id)
+        : await dramaApi.peoples(id);
+    const reviews =
+      type === "movie"
+        ? await moviesApi.reviews(id)
+        : await dramaApi.reviews(id);
+
+    const similar =
+      type === "movie"
+        ? await moviesApi.similar(id)
+        : await dramaApi.similar(id);
+
+    setData({
+      results: data.data,
+      type,
+      id,
+      actors: actors.data,
+      reviews: reviews.data,
+      similar: similar.data,
+      collections: collections !== undefined ? collections.data : undefined,
+    });
+  };
+
   useEffect(() => {
+    getData();
     window.addEventListener("resize", () => setWidth(window.innerWidth));
     return () =>
       window.removeEventListener("resize", () => setWidth(window.innerWidth));
@@ -743,43 +781,6 @@ const Detail = () => {
     }
   }, [data]);
 
-  useEffect(async () => {
-    const where = window.location.href.split("#/")[1];
-    const id = where.split("/")[0];
-    const type = where.split("/")[1];
-    const data =
-      type === "movie" ? await moviesApi.detail(id) : await dramaApi.detail(id);
-
-    const collections =
-      type === "movie" && data.data.belongs_to_collection
-        ? await moviesApi.collection(data.data.belongs_to_collection.id)
-        : {};
-
-    const actors =
-      type === "movie"
-        ? await moviesApi.peoples(id)
-        : await dramaApi.peoples(id);
-    const reviews =
-      type === "movie"
-        ? await moviesApi.reviews(id)
-        : await dramaApi.reviews(id);
-
-    const similar =
-      type === "movie"
-        ? await moviesApi.similar(id)
-        : await dramaApi.similar(id);
-
-    setData({
-      results: data.data,
-      type,
-      id,
-      actors: actors.data,
-      reviews: reviews.data,
-      similar: similar.data,
-      collections: collections !== undefined ? collections.data : undefined,
-    });
-  }, []);
-  console.log(data);
   // profile -> Info ->Video ->Actor->Message-> Related (사진(연두),노랑,초록,빨강,검정,파랑) 543210
   return data ? (
     <>
@@ -972,9 +973,9 @@ const Detail = () => {
                   <div className="videoBox">
                     <iframe
                       src={`https://www.youtube.com/embed/${item.key}?ps=blogger&showinfo=0&cc_load_policy=0&iv_load_policy=3&vq=hd720&rel=0&fs=0&amp;loop=1;playlist=${item.key}`}
-                      frameborder="0"
+                      frameBorder="0"
                       allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullscreen
+                      allowFullScreen
                     ></iframe>
                   </div>
                 ))
@@ -1030,14 +1031,14 @@ const Detail = () => {
         </ItemProfile>
       </Container>
       <SearchPage></SearchPage>
-      <ArrowRapper>
+      <ArrowRapper width={width}>
         <FontAwesomeIcon
           icon={faChevronLeft}
           id="left"
           onClick={arrowBtnClick}
         ></FontAwesomeIcon>
       </ArrowRapper>
-      <ArrowRapper>
+      <ArrowRapper width={width}>
         <FontAwesomeIcon
           icon={faChevronRight}
           id="right"

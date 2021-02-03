@@ -6,7 +6,12 @@ import { connect } from "react-redux";
 import { userActionCreator } from "../store/modules/User";
 import { errorACtionCreator } from "../store/modules/Error";
 
-const Container = styled.div``;
+const Container = styled.div`
+  width: 300px;
+  button {
+    background-color: rgba(60, 99, 130, 1);
+  }
+`;
 
 const SocialLogin = ({ logIn, errorMessage }) => {
   const onClick = async (e) => {
@@ -33,12 +38,6 @@ const SocialLogin = ({ logIn, errorMessage }) => {
       <button name="google" onClick={onClick}>
         Google Login
       </button>
-      <button name="kakao" onClick={onClick}>
-        kakao Login
-      </button>
-      <button name="guest" onClick={onClick}>
-        Guest
-      </button>
     </Container>
   );
 };
@@ -51,3 +50,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 };
 
 export default connect(null, mapDispatchToProps)(SocialLogin);
+
+SocialLogin.propTypes = {
+  logIn: PropTypes.func,
+  errorMessage: PropTypes.func,
+};

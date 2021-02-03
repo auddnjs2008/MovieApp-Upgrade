@@ -17,3 +17,7 @@ const mapStateToProps = (state, ownProps) => {
   return { errorText: state.Error.text };
 };
 export default connect(mapStateToProps, null)(ErrorMessage);
+
+ErrorMessage.propTypes = {
+  errorText: PropTypes.string,
+};

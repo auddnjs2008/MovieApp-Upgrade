@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import { actorApi } from "../api";
 import { Link } from "react-router-dom";
 import SearchPage from "../component/SearchPage";
@@ -57,18 +56,18 @@ const Actor = () => {
   const [data, setData] = useState(null);
   const [size, setSize] = useState(window.innerWidth);
 
+  const getData = async () => {
+    const id = window.location.href.split("actor/")[1];
+    const actor = await actorApi(id);
+    setData(actor.data);
+  };
   useEffect(() => {
+    getData();
     window.addEventListener("resize", () => setSize(window.innerWidth));
     return () =>
       window.removeEventListener("resize", () => setSize(window.innerWidth));
   }, []);
 
-  useEffect(async () => {
-    const id = window.location.href.split("actor/")[1];
-    const actor = await actorApi(id);
-    setData(actor.data);
-  }, []);
-  console.log(data);
   return data ? (
     <>
       <Container>
@@ -89,7 +88,7 @@ const Actor = () => {
               {data.person.popularity}
             </section>
 
-            <section classNAme="actorMovie">
+            <section className="actorMovie">
               <h1>Known for</h1>
               {data.person.known_for.length
                 ? data.person.known_for.map((item) => (
