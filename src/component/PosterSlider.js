@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { moviesApi } from "../api";
+import { dramaApi, moviesApi } from "../api";
 import { queryAllByAttribute } from "@testing-library/react";
 import { storeService } from "../fbase";
 import { Link } from "react-router-dom";
@@ -60,7 +60,7 @@ const MovieWrapper = styled.div`
 
 const SLink = styled(Link)``;
 
-const HomeMovieSlider = ({
+const PosterSlider = ({
   data,
   isMobile,
   MyList,
@@ -150,9 +150,13 @@ const HomeMovieSlider = ({
         data: {
           videos: { results: videos },
           id: videoId,
-          original_title: name,
+          original_title: movieName,
+          original_name: dramaName,
         },
-      } = await moviesApi.detail(parseInt(id));
+      } =
+        type === "movie"
+          ? await moviesApi.detail(parseInt(id))
+          : await dramaApi.detail(parseInt(id));
 
       const hoverBox = document.createElement("div");
       hoverBox.className = "hoverBox";
@@ -163,18 +167,13 @@ const HomeMovieSlider = ({
 
       hoverBox.addEventListener("mouseleave", setOriginal);
       containerBox.appendChild(hoverBox);
-      hoverVideo(videos, videoId, name);
+      hoverVideo(videos, videoId, type === "movie" ? movieName : dramaName);
     }
   };
 
   const bringVideo = async (e) => {
     const {
       currentTarget: { id },
-    } = e;
-    const {
-      currentTarget: {
-        firstChild: { lastChild },
-      },
     } = e;
 
     const where = e.currentTarget.getBoundingClientRect();
@@ -264,16 +263,18 @@ const HomeMovieSlider = ({
   return (
     <>
       <MoviesWrapper>
-        {data !== {}
-          ? data["popular"].map((item, index) =>
+        {data.length
+          ? data.map((item, index) =>
               index > 9 ? (
                 <MovieWrapper
+                  key={item.id}
                   id={item.id}
                   onMouseEnter={isMobile ? "" : bringVideo}
                   onMouseLeave={setClearTime}
                 >
-                  <SLink id={item.id} to={`/${item.id}/${type}`}>
+                  <SLink key={item.id} id={item.id} to={`/${item.id}/${type}`}>
                     <img
+                      alt=""
                       src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                     />
                   </SLink>
@@ -290,15 +291,17 @@ const HomeMovieSlider = ({
               )
             )
           : ""}
-        {data !== {}
-          ? data["popular"].map((item) => (
+        {data.length
+          ? data.map((item) => (
               <MovieWrapper
+                key={item.id}
                 id={item.id}
                 onMouseEnter={isMobile ? "" : bringVideo}
                 onMouseLeave={setClearTime}
               >
-                <SLink id={item.id} to={`/${item.id}/${type}`}>
+                <SLink key={item.id} id={item.id} to={`/${item.id}/${type}`}>
                   <img
+                    alt=""
                     src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                   />
                 </SLink>
@@ -312,16 +315,18 @@ const HomeMovieSlider = ({
               </MovieWrapper>
             ))
           : ""}
-        {data !== {}
-          ? data["popular"].map((item, index) =>
+        {data.length
+          ? data.map((item, index) =>
               index < 10 ? (
                 <MovieWrapper
+                  key={item.id}
                   id={item.id}
                   onMouseEnter={isMobile ? "" : bringVideo}
                   onMouseLeave={setClearTime}
                 >
-                  <SLink id={item.id} to={`/${item.id}/${type}`}>
+                  <SLink key={item.id} id={item.id} to={`/${item.id}/${type}`}>
                     <img
+                      alt=""
                       src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
                     />
                   </SLink>
@@ -362,4 +367,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeMovieSlider);
+export default connect(mapStateToProps, mapDispatchToProps)(PosterSlider);
+
+PosterSlider.propTypes = {
+  data: PropTypes.array,
+  isMobile: PropTypes.bool,
+  MyList: PropTypes.array,
+  listPush: PropTypes.func,
+  bunchPush: PropTypes.func,
+  uid: PropTypes.string,
+  errorText: PropTypes.func,
+  type: PropTypes.string,
+};

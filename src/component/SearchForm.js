@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import { searchActionCreator } from "../store/modules/Search";
 
 const Container = styled.form`

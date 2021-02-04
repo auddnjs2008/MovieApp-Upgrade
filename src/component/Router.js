@@ -1,11 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import {
-  HashRouter as Router,
-  Route,
-  Redirect,
-  Switch,
-} from "react-router-dom";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import Actor from "../routes/Actor";
 import Auth from "../routes/Auth";
 import Detail from "../routes/Detail";

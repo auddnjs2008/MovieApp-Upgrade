@@ -10,7 +10,7 @@ export const userActionCreator = {
   },
 };
 
-export default (state = null, action) => {
+const userReducer = (state = null, action) => {
   switch (action.type) {
     case "LOGIN":
       return { user: action.user };
@@ -20,3 +20,5 @@ export default (state = null, action) => {
       return state;
   }
 };
+
+export default userReducer;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { dramaApi } from "../api";
@@ -95,32 +95,40 @@ const SeasonBox = ({ width, season, setSeason, id }) => {
 
   const closeBtn = () => {
     setData(null);
-    setSeason(null);
+    setSeason("");
   };
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     if (season !== "") {
       const newData = await dramaApi.seasons(id, season);
       setData(newData.data);
     }
-  };
+  }, [id, season]);
 
   useEffect(() => {
     getData();
-  }, [season]);
+  }, [getData]);
 
   return data ? (
     <Container className="infowindow" width={width}>
       <ContentWrapper width={width}>
         <Profile>
           <div className="episodeHeader">
-            <img src={`https://image.tmdb.org/t/p/w300${data.poster_path}`} />
+            <img
+              alt=""
+              src={
+                data.poster_path
+                  ? `https://image.tmdb.org/t/p/w300${data.poster_path}`
+                  : "https://usecloud.s3-ap-northeast-1.amazonaws.com/kakaoMapIcon/movie.jpg"
+              }
+            />
             <div>{data.name}</div>
           </div>
-          {data.episodes.map((item) => (
-            <Episode className="episode" width={width}>
+          {data.episodes.map((item, index) => (
+            <Episode className="episode" width={width} key={index}>
               <h1>{item.episode_number}</h1>
               <img
+                alt=""
                 src={
                   item.still_path
                     ? `https://image.tmdb.org/t/p/w300${item.still_path}`

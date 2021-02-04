@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { moviesApi } from "../api";
@@ -9,53 +9,11 @@ import { connect } from "react-redux";
 import { myListActionCreator } from "../store/modules/MyList";
 import { storeService } from "../fbase";
 import { queryAllByAttribute } from "@testing-library/react";
-import { Link } from "react-router-dom";
 import PosterSlider from "../component/PosterSlider";
+import HeaderPoster from "../component/HeaderPoster";
 
 const Container = styled.div`
   width: 100%;
-`;
-const HeaderImage = styled.div`
-  position: relative;
-  transform: ${(props) => (props.width <= 450 ? " " : "translateY(-13%)")};
-  .Image {
-    position: relative;
-    height: 0;
-    padding-bottom: 56.25%;
-    iframe {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-    }
-  }
-`;
-const HeaderInfo = styled.div`
-  position: absolute;
-
-  bottom: ${(props) => (props.width > 800 ? "10%" : "0")};
-  left: 50px;
-  color: white;
-  border: ${(props) => (props.width > 600 ? "2px solid yellow" : "")};
-  border-radius: 10px;
-  padding: 10px;
-  ${(props) => (props.width <= 600 ? "p{display:none} h1{display:none}" : "")}
-  h1 {
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 20px;
-  }
-  p {
-    margin-bottom: 20px;
-    width: 200px;
-  }
-  button {
-    all: unset;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: rgba(149, 165, 166, 0.5);
-  }
 `;
 
 const ContentWrapper = styled.div`
@@ -65,6 +23,10 @@ const ContentWrapper = styled.div`
     width: 100px;
     height: 130px;
     color: white;
+    img.videoWrapper {
+      width: 50px;
+      height: 50px;
+    }
     div.videoWrapper {
       position: relative;
       height: 0;
@@ -147,17 +109,15 @@ const SectionWrapper = styled.section`
   }
 `;
 
-const SLink = styled(Link)``;
-
 const Movie = ({ MyList, bunchPush, uid }) => {
   const [data, setData] = useState({}); // popular, nowPlaying upComing  -> data.results에 존재
   const [width, setWidth] = useState(window.innerWidth);
 
-  const [isMobile, setMobile] = useState(
+  const [isMobile] = useState(
     /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent)
   );
 
-  const findData = async () => {
+  const findData = useCallback(async () => {
     let testArray = [];
     const test = await storeService
       .collection(`mwFlix-${uid}`)
@@ -171,7 +131,7 @@ const Movie = ({ MyList, bunchPush, uid }) => {
     );
 
     bunchPush(testArray);
-  };
+  }, [bunchPush, uid]);
 
   const getData = async () => {
     const {
@@ -197,7 +157,7 @@ const Movie = ({ MyList, bunchPush, uid }) => {
 
   useEffect(() => {
     if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
-  }, []);
+  }, [findData, MyList]);
 
   useEffect(() => {
     window.addEventListener("resize", () => setWidth(window.innerWidth));
@@ -214,37 +174,12 @@ const Movie = ({ MyList, bunchPush, uid }) => {
 
   return Object.keys(data).length !== 0 ? (
     <Container>
-      <HeaderImage width={width}>
-        {data["latestVideo"]?.length !== 0 ? (
-          <div className="Image">
-            <iframe
-              src={`https://www.youtube.com/embed/${data["latestVideo"][0].key}?vq=hd720&autoplay=1&mute=1&amp;loop=1;playlist=${data["latestVideo"][0].key}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        ) : (
-          <img
-            src={
-              data["latest"].poster_path
-                ? `https://image.tmdb.org/t/p/w300${data["latest"].poster_path}`
-                : "https://usecloud.s3-ap-northeast-1.amazonaws.com/kakaoMapIcon/movie.jpg"
-            }
-          ></img>
-        )}
-        <HeaderInfo width={width}>
-          <h1>{data["latest"].original_title}</h1>
-          <p>
-            {data["latest"].overview.length < 110
-              ? data["latest"].overview
-              : data["latest"].overview.substring(0, 110) + "..."}
-          </p>
-          <SLink id={data["latest"].id} to={`/${data["latest"].id}/movie`}>
-            <button>상세정보</button>
-          </SLink>
-        </HeaderInfo>
-      </HeaderImage>
+      <HeaderPoster
+        video={data["latestVideo"]}
+        data={data["latest"]}
+        width={width}
+        type="movie"
+      ></HeaderPoster>
 
       <ContentWrapper className="content">
         <SectionWrapper>

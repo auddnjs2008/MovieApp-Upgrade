@@ -74,6 +74,7 @@ const Actor = () => {
         <Profile size={size}>
           <img
             src={`https://image.tmdb.org/t/p/w300/${data.person.profile_path}`}
+            alt=""
           />
           <div className="actorInfo">
             <section>
@@ -91,10 +92,11 @@ const Actor = () => {
             <section className="actorMovie">
               <h1>Known for</h1>
               {data.person.known_for.length
-                ? data.person.known_for.map((item) => (
-                    <Link to={`/${item.id}/${item.media_type}`}>
+                ? data.person.known_for.map((item, index) => (
+                    <Link to={`/${item.id}/${item.media_type}`} key={index}>
                       <img
                         src={`https://image.tmdb.org/t/p/w300/${item.poster_path}`}
+                        alt=""
                       />
                     </Link>
                   ))

@@ -6,7 +6,7 @@ export const errorACtionCreator = {
   error: (error) => ({ type: ERROR, text: error }),
 };
 
-export default (state = "", action) => {
+const errorReducer = (state = "", action) => {
   switch (action.type) {
     case SUCCESS:
       return { text: "" };
@@ -16,3 +16,5 @@ export default (state = "", action) => {
       return state;
   }
 };
+
+export default errorReducer;

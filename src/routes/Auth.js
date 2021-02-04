@@ -3,11 +3,9 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { authService } from "../fbase";
 import { connect } from "react-redux";
-import { userActionCreator } from "../store/modules/User";
 import { errorACtionCreator } from "../store/modules/Error";
 import SocialLogin from "../component/SocialLogin";
 import ErrorMessage from "../component/ErrorMessage";
-import { myListActionCreator } from "../store/modules/MyList";
 import { useEffect } from "react";
 
 const Container = styled.div`
@@ -88,17 +86,14 @@ const Auth = ({ errorMessage, successMessage }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    let user;
+
     try {
       if (!create) {
         // 로그인 처리해줘야 한다.
-        user = await authService.signInWithEmailAndPassword(email, password);
+        await authService.signInWithEmailAndPassword(email, password);
       } else if (create) {
         // 만들어주는 처리 해줘야 한다.
-        user = await authService.createUserWithEmailAndPassword(
-          email,
-          password
-        );
+        await authService.createUserWithEmailAndPassword(email, password);
       }
       successMessage();
 
@@ -127,7 +122,10 @@ const Auth = ({ errorMessage, successMessage }) => {
   return (
     <Container>
       <h1>MWFlix</h1>
-      <img src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A42.PNG" />
+      <img
+        alt=""
+        src="https://usecloud.s3-ap-northeast-1.amazonaws.com/%EC%96%B4%EB%AA%BD%EC%96%B4%EC%8A%A42.PNG"
+      />
       <Form onSubmit={onSubmit} width={width}>
         <input
           type="email"

@@ -1,7 +1,6 @@
 import APPRouter from "./Router";
 import GlobalStyle from "./GlobalStyle";
 import PropTypes from "prop-types";
-import Navigator from "./Navigator";
 import { useEffect, useState } from "react";
 import { authService } from "../fbase";
 import { connect } from "react-redux";
@@ -18,7 +17,7 @@ function App({ logIn, logOut }) {
       }
       setInit(true);
     });
-  }, []);
+  }, [logIn, logOut]);
 
   return (
     <>

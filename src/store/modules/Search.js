@@ -6,7 +6,7 @@ export const searchActionCreator = {
   noSearch: () => ({ type: NOSEARCH, text: "" }),
 };
 
-export default (state = "", action) => {
+const searchReducer = (state = "", action) => {
   switch (action.type) {
     case SEARCH:
       return action.text;
@@ -16,3 +16,5 @@ export default (state = "", action) => {
       return state;
   }
 };
+
+export default searchReducer;

@@ -1,6 +1,3 @@
-import { queryAllByAttribute } from "@testing-library/react";
-import { authService, storeService } from "../../fbase";
-
 const POP = "POP";
 const PUSH = "PUSH";
 const BUNCHPUSH = "BUNCHPUSH";
@@ -11,7 +8,7 @@ export const myListActionCreator = {
   dataBunchPush: (data) => ({ type: BUNCHPUSH, data }), // data엔 배열이 들어온다.
 };
 
-export default (state = [], action) => {
+const listReducer = (state = [], action) => {
   switch (action.type) {
     case PUSH:
       return [{ id: action.id, content: action.content }, ...state];
@@ -23,3 +20,5 @@ export default (state = [], action) => {
       return state;
   }
 };
+
+export default listReducer;

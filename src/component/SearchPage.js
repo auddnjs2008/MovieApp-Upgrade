@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
@@ -151,7 +151,7 @@ const SearchPage = ({ search, noSearch }) => {
     searchInput.value = "";
   };
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     if (search !== "") {
       const {
         data: { results: searchDrama },
@@ -163,18 +163,22 @@ const SearchPage = ({ search, noSearch }) => {
       setDrama(searchDrama);
       setMovie(searchMovie);
     }
-  };
+  }, [search]);
 
   useEffect(() => {
-    getData();
     window.addEventListener("scroll", () =>
       setScroll(parseInt(window.scrollY))
     );
-    return () =>
+    return () => {
       window.removeEventListener("scroll", () =>
         setScroll(parseInt(window.scrollY))
       );
+    };
   }, []);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
   return search !== "" ? (
     <Container scroll={scroll}>
@@ -184,11 +188,13 @@ const SearchPage = ({ search, noSearch }) => {
           {mov && mov.length !== 0
             ? mov.map((item) => (
                 <Link
+                  key={item.id}
                   to={`/${item.id}/movie`}
                   onClick={() => setTimeout(() => window.location.reload(), 50)}
                 >
                   <Poster>
                     <img
+                      alt=""
                       src={
                         item.poster_path
                           ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
@@ -233,11 +239,13 @@ const SearchPage = ({ search, noSearch }) => {
           {tv && tv.length !== 0
             ? tv.map((item) => (
                 <Link
+                  key={item.id}
                   to={`/${item.id}/tv`}
                   onClick={() => setTimeout(() => window.location.reload(), 50)}
                 >
                   <Poster>
                     <img
+                      alt=""
                       src={
                         item.poster_path
                           ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
