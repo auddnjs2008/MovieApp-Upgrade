@@ -157,7 +157,7 @@ const Movie = ({ MyList, bunchPush, uid }) => {
 
   useEffect(() => {
     if (!MyList.length) findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
-  }, [findData, MyList]);
+  }, [findData]);
 
   useEffect(() => {
     window.addEventListener("resize", () => setWidth(window.innerWidth));

@@ -164,11 +164,10 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
     const {
       currentTarget: { className },
     } = e;
+
     const rowId = document.querySelector(".newTicket").id;
     e.currentTarget.style.backgroundColor = "rgba(20,20,20,0.5)";
 
-    e.preventDefault();
-    e.stopPropagation();
     const numberId = parseInt(rowId.split("-")[0]);
     const type = rowId.split("-")[1];
 
@@ -187,9 +186,17 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
         .collection(`mwFlix-${uid}`)
         .get(queryAllByAttribute);
       object.forEach((item) => {
-        if (item.data().id === numberId) item.ref.delete();
+        if (item.data().id === numberId) {
+          item.ref.delete();
+        }
       });
+
       Pop(numberId); //  state의 상태를 업그레이드 시켜준다.
+      // 만일 데이터가 한개인 상태에서  삭제하면   findData를 여기서 한번실행시켜주자
+      if (MyList.length === 1) {
+        setDrama([]);
+        setMovie([]);
+      }
     }
   };
 
@@ -214,14 +221,13 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
         content: item.data().type,
       })
     );
-
     bunchPush(testArray);
   }, [bunchPush, uid]);
 
   const getData = useCallback(async () => {
     let testDrama = [];
     let testMovie = [];
-
+    console.log("마이리스트", MyList);
     MyList.forEach((item) =>
       item.content === "movie"
         ? testMovie.push(parseInt(item.id))
@@ -251,9 +257,9 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
 
   useEffect(() => {
     if (!MyList.length) {
-      findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다.
+      findData(); // 처음 로그인하고  화면들어올때만  셋팅을 해준다. (state에 아이디들을 저장해준다.  )
     } else {
-      getData();
+      getData(); // 저장된 아이디들의 정보를 찾고 분류해준다.
     }
   }, [getData, findData, MyList]);
 
@@ -263,7 +269,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
     window.location.href = "/";
   };
 
-  return movie.length || drama.length ? (
+  return (
     <>
       <DropBox
         className="dropBox"
@@ -279,6 +285,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
         height={document.body.offsetHeight}
         className="trash"
         droppable="true"
+        draggable="true"
         onDragOver={onDragOver}
         onTouchMove={onDragOver}
         onDragLeave={onDragLeave}
@@ -296,6 +303,8 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
               movie={movie}
               drama={drama}
               draggable="true"
+              setDrama={setDrama}
+              setMovie={setMovie}
             ></MyPagePoster>
           ) : (
             ""
@@ -307,6 +316,8 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
               movie={movie}
               drama={drama}
               draggable="true"
+              setDrama={setDrama}
+              setMovie={setMovie}
             ></MyPagePoster>
           ) : (
             ""
@@ -321,8 +332,6 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
         </AlarmBox>
       </Container>
     </>
-  ) : (
-    ""
   );
 };
 

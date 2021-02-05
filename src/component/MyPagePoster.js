@@ -72,7 +72,17 @@ const Poster = styled.div`
   }
 `;
 
-const MyPagePoster = ({ title, sendKakaoMessage, movie, drama, uid, Pop }) => {
+const MyPagePoster = ({
+  title,
+  sendKakaoMessage,
+  movie,
+  drama,
+  uid,
+  Pop,
+  setDrama,
+  setMovie,
+  MyList,
+}) => {
   const sliderFunc = (e) => {
     const {
       currentTarget: { id, previousSibling },
@@ -137,9 +147,16 @@ const MyPagePoster = ({ title, sendKakaoMessage, movie, drama, uid, Pop }) => {
           .collection(`mwFlix-${uid}`)
           .get(queryAllByAttribute);
         object.forEach((item) => {
-          if (item.data().id === numberId) item.ref.delete();
+          if (item.data().id === numberId) {
+            item.ref.delete();
+          }
         });
         Pop(numberId); //  state의 상태를 업그레이드 시켜준다.
+        //만일 데이터가 한개인 상태에서  삭제하면   findData를 여기서 한번실행시켜주자
+        if (MyList.length === 1) {
+          setDrama([]);
+          setMovie([]);
+        }
       } else if (y <= dropBox.clientHeight && y >= 0) {
         //공유기능
         const [data] =
@@ -236,7 +253,7 @@ const MyPagePoster = ({ title, sendKakaoMessage, movie, drama, uid, Pop }) => {
   );
 };
 const mapStateToProps = (state, ownProps) => {
-  return { uid: state.User.user.uid };
+  return { MyList: state.MyList, uid: state.User.user.uid };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -254,4 +271,6 @@ MyPagePoster.propTypes = {
   drama: PropTypes.array,
   uid: PropTypes.string,
   Pop: PropTypes.func,
+  setDrama: PropTypes.func,
+  setMovie: PropTypes.func,
 };
