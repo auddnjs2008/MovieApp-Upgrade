@@ -192,38 +192,36 @@ const MyPagePoster = ({ title, sendKakaoMessage, movie, drama, uid, Pop }) => {
   return (
     <Wrapper>
       <h1>{title}</h1>
-      {(title === "Movies" ? movie : drama).length ? (
-        <MovieWrapper>
-          {(title === "Movies" ? movie : drama).map((item) => (
-            <Poster
+
+      <MovieWrapper>
+        {(title === "Movies" ? movie : drama).map((item) => (
+          <Poster
+            key={item.id}
+            onDragStart={onDragStart}
+            onTouchStart={onDragStart}
+            onDragEnd={onDragend}
+            onTouchEnd={onDragend}
+            onDrag={onDrag}
+            onTouchMove={onDrag}
+            id={`${item.id}-${title === "Movies" ? "movie" : "tv"}`}
+          >
+            <Link
               key={item.id}
-              onDragStart={onDragStart}
-              onTouchStart={onDragStart}
-              onDragEnd={onDragend}
-              onTouchEnd={onDragend}
-              onDrag={onDrag}
-              onTouchMove={onDrag}
-              id={`${item.id}-${title === "Movies" ? "movie" : "tv"}`}
+              to={`/${item.id}/${title === "Movies" ? "movie" : "tv"}`}
             >
-              <Link
-                key={item.id}
-                to={`/${item.id}/${title === "Movies" ? "movie" : "tv"}`}
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
-                  draggable="false"
-                  alt=""
-                />
-              </Link>
-              <div>
-                {title === "Movies" ? item.original_title : item.original_name}
-              </div>
-            </Poster>
-          ))}
-        </MovieWrapper>
-      ) : (
-        ""
-      )}
+              <img
+                src={`https://image.tmdb.org/t/p/w300${item.poster_path}`}
+                draggable="false"
+                alt=""
+              />
+            </Link>
+            <div>
+              {title === "Movies" ? item.original_title : item.original_name}
+            </div>
+          </Poster>
+        ))}
+      </MovieWrapper>
+
       <FontAwesomeIcon
         id="left"
         icon={faChevronLeft}
