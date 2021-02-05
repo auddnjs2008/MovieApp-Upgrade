@@ -201,9 +201,17 @@ const PosterSlider = ({
       .collection(`mwFlix-${uid}`)
       .get(queryAllByAttribute);
 
-    test.forEach((item) =>
-      parseInt(item.data().id) === parseInt(id) ? (save = 0) : (save = 1)
-    ); // 아이다가 같으면 save해주지 않는다.
+    // 있는 건  저장하면 안된다.
+    test.forEach((item) => {
+      if (parseInt(item.data().id) === parseInt(id)) {
+        save = 0;
+      }
+    }); // 아이다가 같으면 save해주지 않는다.
+
+    console.log(save);
+    console.log(parseInt(id), "가 저장 됩니다. ");
+    test.forEach((item) => console.log(item.data().id));
+
     if (save) {
       const data = { id: parseInt(id), creator: uid, type: "movie" };
       await storeService.collection(`mwFlix-${uid}`).add(data);
@@ -269,7 +277,7 @@ const PosterSlider = ({
                 <MovieWrapper
                   key={item.id}
                   id={item.id}
-                  onMouseEnter={isMobile ? "" : bringVideo}
+                  onMouseEnter={isMobile ? () => {} : bringVideo}
                   onMouseLeave={setClearTime}
                 >
                   <SLink key={item.id} id={item.id} to={`/${item.id}/${type}`}>
@@ -296,7 +304,7 @@ const PosterSlider = ({
               <MovieWrapper
                 key={item.id}
                 id={item.id}
-                onMouseEnter={isMobile ? "" : bringVideo}
+                onMouseEnter={isMobile ? () => {} : bringVideo}
                 onMouseLeave={setClearTime}
               >
                 <SLink key={item.id} id={item.id} to={`/${item.id}/${type}`}>
@@ -321,7 +329,7 @@ const PosterSlider = ({
                 <MovieWrapper
                   key={item.id}
                   id={item.id}
-                  onMouseEnter={isMobile ? "" : bringVideo}
+                  onMouseEnter={isMobile ? () => {} : bringVideo}
                   onMouseLeave={setClearTime}
                 >
                   <SLink key={item.id} id={item.id} to={`/${item.id}/${type}`}>
