@@ -10,6 +10,7 @@ import { myListActionCreator } from "../store/modules/MyList";
 import { queryAllByAttribute } from "@testing-library/react";
 
 import MyPagePoster from "../component/MyPagePoster";
+import { errorACtionCreator } from "../store/modules/Error";
 
 const Container = styled.div`
   margin-top: 80px;
@@ -114,7 +115,16 @@ const AlarmBox = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
+const MyPage = ({
+  logOut,
+  bunchPush,
+  MyList,
+  uid,
+  Pop,
+  errorText,
+  clearError,
+  setError,
+}) => {
   // 물론  데이터를 데이터베이스에서 바로 가져오는게 더유용하다 생각하지만 리덕스를 연습하기위해  리덕스
   // state를 써서 데이터를 관리하려고 함
   const [movie, setMovie] = useState([]);
@@ -172,7 +182,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
     const type = rowId.split("-")[1];
 
     if (className.includes("dropBox")) {
-      console.log("공유해줍니다."); // 카톡 공유 기능 구현
+      setError("공유해줍니다."); // 카톡 공유 기능 구현
       //
       const [data] =
         type === "movie"
@@ -182,6 +192,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
       sendKakaoMessage(data);
     } else {
       // 파이어베이스 삭제 기능 구현
+      setError("삭제합니다.");
       const object = await storeService
         .collection(`mwFlix-${uid}`)
         .get(queryAllByAttribute);
@@ -227,7 +238,7 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
   const getData = useCallback(async () => {
     let testDrama = [];
     let testMovie = [];
-    console.log("마이리스트", MyList);
+
     MyList.forEach((item) =>
       item.content === "movie"
         ? testMovie.push(parseInt(item.id))
@@ -250,6 +261,15 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
   const windowScroll = () => {
     setScroll(window.scrollY);
   };
+
+  useEffect(() => {
+    if (errorText !== "") {
+      setTimeout(() => {
+        clearError();
+      }, 2000);
+    }
+  }, [errorText, clearError]);
+
   useEffect(() => {
     window.addEventListener("scroll", windowScroll);
     return () => window.removeEventListener("scroll", windowScroll);
@@ -336,7 +356,11 @@ const MyPage = ({ logOut, bunchPush, MyList, uid, Pop }) => {
 };
 
 const mapStateToProps = (state, ownProps) => {
-  return { MyList: state.MyList, uid: state.User.user.uid };
+  return {
+    MyList: state.MyList,
+    uid: state.User.user.uid,
+    errorText: state.Error.text,
+  };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -344,6 +368,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     logOut: () => dispatch(userActionCreator.logout()),
     bunchPush: (data) => dispatch(myListActionCreator.dataBunchPush(data)),
     Pop: (id) => dispatch(myListActionCreator.dataPop(id)),
+    clearError: () => dispatch(errorACtionCreator.success()),
+    setError: (text) => dispatch(errorACtionCreator.error(text)),
   };
 };
 
@@ -355,4 +381,7 @@ MyPage.propTypes = {
   MyList: PropTypes.array,
   uid: PropTypes.string,
   Pop: PropTypes.func,
+  errorText: PropTypes.string,
+  clearError: PropTypes.func,
+  setError: PropTypes.func,
 };

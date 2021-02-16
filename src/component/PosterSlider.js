@@ -214,6 +214,7 @@ const PosterSlider = ({
       const data = { id: parseInt(id), creator: uid, type };
       await storeService.collection(`mwFlix-${uid}`).add(data);
       listPush(parseInt(id), type);
+      errorText("성공적으로 저장되었습니다.");
     } else {
       errorText(`이미 저장되어있는 ${type}입니다.`);
     }

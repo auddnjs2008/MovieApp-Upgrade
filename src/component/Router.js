@@ -7,6 +7,7 @@ import Detail from "../routes/Detail";
 import Drama from "../routes/Drama";
 import Movie from "../routes/Movie";
 import MyPage from "../routes/MyPage";
+import ErrorMessage from "./ErrorMessage";
 import Navigator from "./Navigator";
 
 const APPRouter = ({ user }) => {
@@ -39,6 +40,7 @@ const APPRouter = ({ user }) => {
           <Auth />
         </Route>
       )}
+      <ErrorMessage></ErrorMessage>
     </Router>
   );
 };

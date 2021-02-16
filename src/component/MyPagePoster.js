@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { storeService } from "../fbase";
@@ -11,6 +11,7 @@ import { queryAllByAttribute } from "@testing-library/react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { myListActionCreator } from "../store/modules/MyList";
+import { errorACtionCreator } from "../store/modules/Error";
 
 const Wrapper = styled.section`
   width: 100%;
@@ -82,6 +83,9 @@ const MyPagePoster = ({
   setDrama,
   setMovie,
   MyList,
+  errorText,
+  clearError,
+  setError,
 }) => {
   const sliderFunc = (e) => {
     const {
@@ -143,6 +147,7 @@ const MyPagePoster = ({
 
       if (x <= trashBox.clientWidth && x >= 0) {
         //삭제기능
+        setError("삭제합니다.");
         const object = await storeService
           .collection(`mwFlix-${uid}`)
           .get(queryAllByAttribute);
@@ -163,7 +168,7 @@ const MyPagePoster = ({
           type === "movie"
             ? movie.filter((item) => item.id === numberId)
             : drama.filter((item) => item.id === numberId);
-
+        setError("공유해줍니다");
         sendKakaoMessage(data);
       }
     }
@@ -205,6 +210,12 @@ const MyPagePoster = ({
       dropBox.style.backgroundColor = "yellow";
     else dropBox.style.backgroundColor = "rgba(20,20,20,0.5)";
   };
+
+  useEffect(() => {
+    if (errorText !== "") {
+      setTimeout(() => clearError(), 2000);
+    }
+  }, [errorText]);
 
   return (
     <Wrapper>
@@ -253,12 +264,18 @@ const MyPagePoster = ({
   );
 };
 const mapStateToProps = (state, ownProps) => {
-  return { MyList: state.MyList, uid: state.User.user.uid };
+  return {
+    MyList: state.MyList,
+    uid: state.User.user.uid,
+    errorText: state.Error.text,
+  };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     Pop: (id) => dispatch(myListActionCreator.dataPop(id)),
+    clearError: () => dispatch(errorACtionCreator.success()),
+    setError: (text) => dispatch(errorACtionCreator.error(text)),
   };
 };
 
@@ -273,4 +290,7 @@ MyPagePoster.propTypes = {
   Pop: PropTypes.func,
   setDrama: PropTypes.func,
   setMovie: PropTypes.func,
+  errorText: PropTypes.string,
+  clearError: PropTypes.func,
+  setError: PropTypes.func,
 };
