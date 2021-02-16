@@ -164,6 +164,7 @@ const MyPagePoster = ({
         }
       } else if (y <= dropBox.clientHeight && y >= 0) {
         //공유기능
+        console.log(data);
         const [data] =
           type === "movie"
             ? movie.filter((item) => item.id === numberId)
