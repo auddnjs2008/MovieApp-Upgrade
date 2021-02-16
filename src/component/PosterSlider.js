@@ -72,6 +72,7 @@ const PosterSlider = ({
 }) => {
   // 데이터, isMobile,bringVideo,setClearTime,handleShareBtn,handleSlider
   //const [testTimer, setTimer] = useState(null);
+
   let testTimer = null;
   // 확대된 포스터 위에서 마우스가 벗어났을 때  원래대로 되돌린다.
 
@@ -208,8 +209,6 @@ const PosterSlider = ({
       }
     }); // 아이다가 같으면 save해주지 않는다.
 
-    test.forEach((item) => console.log(item.data().id));
-
     if (save) {
       const data = { id: parseInt(id), creator: uid, type };
       await storeService.collection(`mwFlix-${uid}`).add(data);
@@ -219,7 +218,6 @@ const PosterSlider = ({
       errorText(`이미 저장되어있는 ${type}입니다.`);
     }
   };
-  console.log(MyList);
 
   const handleSlider = (e) => {
     const {

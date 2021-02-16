@@ -132,7 +132,7 @@ const MyPage = ({
   const [scroll, setScroll] = useState(window.scrollY);
 
   const { Kakao } = window;
-
+  console.log("mypage", uid);
   const sendKakaoMessage = (item) => {
     // item으로 드라마나 영화 객체 전달
     Kakao.Link.sendDefault({

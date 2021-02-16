@@ -8,6 +8,7 @@ import { userActionCreator } from "../store/modules/User";
 
 function App({ logIn, logOut }) {
   const [init, setInit] = useState(false);
+
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
       if (user) {

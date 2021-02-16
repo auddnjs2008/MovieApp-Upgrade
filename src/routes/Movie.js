@@ -117,6 +117,8 @@ const Movie = ({ MyList, bunchPush, uid }) => {
     /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent)
   );
 
+  if (!uid || uid === undefined) window.location.reload();
+
   const findData = useCallback(async () => {
     let testArray = [];
     const test = await storeService
