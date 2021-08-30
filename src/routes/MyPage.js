@@ -133,9 +133,9 @@ const MyPage = ({
 
   const { Kakao } = window;
 
-  const sendKakaoMessage = (item) => {
+  const sendKakaoMessage = async (item) => {
     // item으로 드라마나 영화 객체 전달
-    Kakao.Link.sendDefault({
+    await Kakao.Link.sendDefault({
       objectType: "feed",
       content: {
         title: `영화-${
@@ -189,7 +189,7 @@ const MyPage = ({
           ? movie.filter((item) => item.id === numberId)
           : drama.filter((item) => item.id === numberId);
 
-      sendKakaoMessage(data);
+      await sendKakaoMessage(data);
     } else {
       // 파이어베이스 삭제 기능 구현
       setError("삭제합니다.");
