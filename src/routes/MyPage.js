@@ -135,39 +135,44 @@ const MyPage = ({
 
   const sendKakaoMessage = async (item) => {
     // item으로 드라마나 영화 객체 전달
-    await Kakao.Link.sendDefault({
-      objectType: "feed",
-      content: {
-        title: `영화-${
-          item.original_title ? item.original_title : item.original_name
-        }`,
-        description: item.overview,
-        imageUrl: `https://image.tmdb.org/t/p/w300${item.poster_path}`,
-        link: {
-          mobileWebUrl: "https://developers.kakao.com",
-          androidExecParams: "test",
-        },
-      },
-      social: {
-        likeCount: item.popularity,
-        //commentCount: 20,
-        viewCount: item.vote_average,
-      },
-      buttons: [
-        {
-          title: "웹으로 이동",
-          link: {
-            mobileWebUrl: item.homepage,
-          },
-        },
-        {
-          title: "앱으로 이동",
+    console.log(item);
+    try {
+      await Kakao.Link.sendDefault({
+        objectType: "feed",
+        content: {
+          title: `영화-${
+            item.original_title ? item.original_title : item.original_name
+          }`,
+          description: `${item.overview}`,
+          imageUrl: `https://image.tmdb.org/t/p/w300${item.poster_path}`,
           link: {
             mobileWebUrl: "https://developers.kakao.com",
+            androidExecParams: "test",
           },
         },
-      ],
-    });
+        social: {
+          // likeCount: item.popularity,
+          // //commentCount: 20,
+          // viewCount: item.vote_average,
+        },
+        buttons: [
+          {
+            title: "웹으로 이동",
+            link: {
+              mobileWebUrl: `${item.homepage}`,
+            },
+          },
+          {
+            title: "앱으로 이동",
+            link: {
+              mobileWebUrl: "https://developers.kakao.com",
+            },
+          },
+        ],
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const onDrop = async (e) => {
